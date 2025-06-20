@@ -66,12 +66,15 @@ if (isset($_GET['use_profile']) && is_numeric($_GET['use_profile'])) {
 
 // --- Fetch Profile Data ---
 
-// --- Ambil data profil dari database (tabel: profile, kolom: full_name, profession, birth_place, birth_date) ---
+/*
+ * --- Ambil data profil dari database (tabel: profile, kolom: full_name, profession, birth_place, birth_date, value_per_month) ---
+ */
 $profileData = [
     'full_name' => '',
     'profession' => '',
     'birth_place' => '',
-    'birth_date' => ''
+    'birth_date' => '',
+    'value_per_month' => ''
 ];
 $profileSql = "SELECT * FROM profile LIMIT 1";
 $profileResult = $conn->query($profileSql);
@@ -85,13 +88,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
     $profession = $conn->real_escape_string($_POST['profession']);
     $birthPlace = $conn->real_escape_string($_POST['birthPlace']);
     $birthDate = $conn->real_escape_string($_POST['birthDate']);
+    $valuePerMonth = isset($_POST['value_per_month']) ? $conn->real_escape_string($_POST['value_per_month']) : '';
 
     // Cek apakah sudah ada data
     $check = $conn->query("SELECT id FROM profile LIMIT 1");
     if ($check && $check->num_rows > 0) {
-        $conn->query("UPDATE profile SET full_name='$fullName', profession='$profession', birth_place='$birthPlace', birth_date='$birthDate' LIMIT 1");
+        $conn->query("UPDATE profile SET full_name='$fullName', profession='$profession', birth_place='$birthPlace', birth_date='$birthDate', value_per_month='$valuePerMonth' LIMIT 1");
     } else {
-        $conn->query("INSERT INTO profile (full_name, profession, birth_place, birth_date) VALUES ('$fullName', '$profession', '$birthPlace', '$birthDate')");
+        $conn->query("INSERT INTO profile (full_name, profession, birth_place, birth_date, value_per_month) VALUES ('$fullName', '$profession', '$birthPlace', '$birthDate', '$valuePerMonth')");
     }
     // Refresh data
     header("Location: " . $_SERVER['PHP_SELF']);
@@ -352,6 +356,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_contact'])) {
     exit;
 }
 
+// handle edit contact
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_contact'])) {
+    $id = intval($_POST['contact_id']);
+    $email = $conn->real_escape_string($_POST['contact_email']);
+    $phone = intval($_POST['contact_phone']);
+    $location = $conn->real_escape_string($_POST['contact_location']);
+    // $twitter = $conn->real_escape_string($_POST['social_twitter']);
+    // $linkedin = $conn->real_escape_string($_POST['social_linkedin']);
+    // $github = $conn->real_escape_string($_POST['social_github']);
+    $conn->query("UPDATE contact SET email='$email', phone='$phone', location='$location' WHERE id=$id");
+    header("Location: " . $_SERVER['PHP_SELF'] . "#contact-tab");
+    exit;
+}
+
+// delete_contact
+if (isset($_GET['delete_contact']) && is_numeric($_GET['delete_contact'])) {
+    $id = intval($_GET['delete_contact']);
+    $conn->query("DELETE FROM contact WHERE id=$id");
+    header("Location: " . strtok($_SERVER['REQUEST_URI'], '?') . "#contact-tab");
+    exit;
+}
+
 // --- Handle add activity ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_activity'])) {
     $activity = $conn->real_escape_string($_POST['activity_name']);
@@ -417,17 +443,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
 </head>
 
 <body class="bg-dark-bg text-light-surface min-h-screen">
-    <!-- Admin Header -->
-    <header class="bg-gradient-to-r from-warm-wood to-accent-green shadow-lg">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <h1 class="text-2xl font-bold text-white">Admin Panel Portfolio</h1>
-            </div>
-        </div>
-    </header>
+    <!-- Responsive Navbar (Admin) -->
+    <nav class="bg-gray-900 px-4 py-3 flex items-center justify-between md:hidden">
+        <div class="text-white font-bold text-lg">Portofolio Admin</div>
+        <button id="navToggle" class="text-white focus:outline-none">
+            <!-- Hamburger icon -->
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+    </nav>
+    <!-- Mobile Tabs Menu -->
+    <div id="mobileMenu" class="md:hidden bg-gray-800 text-white px-4 py-2 hidden">
+        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="profile"><span class="mr-2">👤</span>Profil</button>
+        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="about"><span class="mr-2">📝</span>Tentang</button>
+        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="skills"><span class="mr-2">🛠️</span>Skills</button>
+        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="projects"><span class="mr-2">🚀</span>Proyek</button>
+        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="articles"><span class="mr-2">📰</span>Artikel</button>
+        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="contact"><span class="mr-2">📞</span>Kontak</button>
+        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="contact-messages"><span class="mr-2">📬</span>Pesan Masuk</button>
+    </div>
+    <script>
+        // Hamburger for mobile menu
+        const navToggle = document.getElementById('navToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        navToggle && navToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
 
-    <!-- Navigation Tabs -->
-    <nav class="bg-gray-900 border-b border-gray-800 shadow-md">
+        // Tab switching for mobile menu
+        document.querySelectorAll('#mobileMenu .tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Hide mobile menu after click
+                mobileMenu.classList.add('hidden');
+            });
+        });
+    </script>
+
+    <!-- Navigation Tabs (Desktop) -->
+    <nav class="bg-gray-900 border-b border-gray-800 shadow-md hidden md:block">
         <div class="container mx-auto px-6">
             <div class="flex flex-wrap items-center justify-between">
                 <div class="flex space-x-2 md:space-x-6 overflow-x-auto py-2 w-full md:w-auto">
@@ -530,6 +585,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
                             <div>
                                 <label class="block text-sm font-medium mb-2">Tanggal Lahir</label>
                                 <input type="date" name="birthDate" value="<?php echo htmlspecialchars($profileData['birth_date']); ?>" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 focus:border-warm-wood focus:outline-none" required>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium mb-2">Nilai Per Bulan</label>
+                                <input type="number" name="value_per_month" value="<?php echo htmlspecialchars($profileData['value_per_month']); ?>" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 focus:border-warm-wood focus:outline-none" min="0" step="1000">
                             </div>
                             <!-- Tombol Simpan khusus Profile -->
                             <div class="mt-8 flex justify-end">
@@ -698,16 +758,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
                         $activityQ = $conn->query("SELECT * FROM activity ORDER BY id DESC");
                         if ($activityQ && $activityQ->num_rows > 0) {
                             while ($act = $activityQ->fetch_assoc()) {
+                                // JS for edit modal
+                                $js = "openActivityModal(" . $act['id'] . ", '" . addslashes($act['name']) . "', '" . addslashes($act['description']) . "')";
                                 echo '<li class="bg-gray-900 rounded p-3 border border-gray-700 flex flex-col md:flex-row md:items-center md:gap-4">';
                                 echo '<div class="flex-1"><b>' . htmlspecialchars($act['name']) . '</b><br><span class="text-xs text-gray-400">' . htmlspecialchars($act['description']) . '</span></div>';
                                 echo '<div class="flex gap-2 mt-2 md:mt-0">';
-                                echo '<form method="post" style="display:inline;">'
-                                    . '<input type="hidden" name="activity_id" value="' . $act['id'] . '">'
-                                    . '<input type="text" name="activity_name" value="' . htmlspecialchars($act['name']) . '" class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-xs w-32">'
-                                    . '<input type="text" name="activity_description" value="' . htmlspecialchars($act['description']) . '" class="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-xs w-48">'
-                                    . '<button type="submit" name="edit_activity" class="bg-green-600 text-white px-2 py-1 rounded text-xs">Simpan</button>'
-                                    . '</form>';
-                                echo '<a href="?delete_activity=' . $act['id'] . '#about-tab" onclick="return confirm(\'Hapus aktivitas ini?\')" class="bg-red-600 text-white px-2 py-1 rounded text-xs">Hapus</a>';
+                                echo '<button type="button" onclick="' . $js . '" class="bg-green-600 text-white px-3 py-1 rounded text-xs">Edit</button>';
+                                echo '<a href="?delete_activity=' . $act['id'] . '#about-tab" onclick="return confirm(\'Hapus aktivitas ini?\')" class="bg-red-600 text-white px-3 py-1 rounded text-xs">Hapus</a>';
                                 echo '</div>';
                                 echo '</li>';
                             }
@@ -951,23 +1008,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
                                 <input type="text" name="contact_location" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 focus:border-warm-wood focus:outline-none">
                             </div>
                         </div>
-                        <div class="space-y-4">
-                            <h3 class="text-xl font-semibold text-warm-wood">Social Media</h3>
-                            <div>
-                                <label class="block text-sm font-medium mb-2">Twitter</label>
-                                <input type="url" name="social_twitter" placeholder="https://twitter.com/username" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 focus:border-warm-wood focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-2">LinkedIn</label>
-                                <input type="url" name="social_linkedin" placeholder="https://linkedin.com/in/username" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 focus:border-warm-wood focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-2">GitHub</label>
-                                <input type="url" name="social_github" placeholder="https://github.com/username" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2 focus:border-warm-wood focus:outline-none">
-                            </div>
-                        </div>
                     </div>
-                    <div class="mt-8 flex justify-end">
+                    <div class="mt-8 flex justify-start">
                         <button type="submit" name="save_contact" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 shadow">
                             💾 Simpan Kontak & Sosial Media
                         </button>
@@ -980,13 +1022,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
                         $contactQ = $conn->query("SELECT * FROM contact ORDER BY id DESC LIMIT 1");
                         if ($contactQ && $contactQ->num_rows > 0) {
                             $c = $contactQ->fetch_assoc();
-                            echo '<li class="bg-gray-900 rounded p-3 border border-gray-700">'
-                                . '<b>Email:</b> ' . htmlspecialchars($c['email']) . '<br>'
-                                . '<b>Telepon:</b> ' . htmlspecialchars($c['phone']) . '<br>'
-                                . '<b>Lokasi:</b> ' . htmlspecialchars($c['location']) . '<br>'
-                                . '<b>Twitter:</b> ' . htmlspecialchars($c['twitter']) . '<br>'
-                                . '<b>LinkedIn:</b> ' . htmlspecialchars($c['linkedin']) . '<br>'
-                                . '<b>GitHub:</b> ' . htmlspecialchars($c['github']) . '</li>';
+                            echo '<li class="bg-gray-900 rounded p-3 border border-gray-700 flex flex-col md:flex-row md:items-center md:gap-4">';
+                            echo '<div class="flex-1">';
+                            echo '<b>Email:</b> ' . htmlspecialchars($c['email']) . '<br>';
+                            echo '<b>Telepon:</b> ' . htmlspecialchars($c['phone']) . '<br>';
+                            echo '<b>Lokasi:</b> ' . htmlspecialchars($c['location']) . '<br>';
+                            echo '</div>';
+                            echo '<div class="flex gap-2 mt-2 md:mt-0">';
+                            // Tombol Edit (buka modal)
+                            $js = "openContactModal(" .
+                                intval($c['id']) . ", '" .
+                                addslashes($c['email']) . "', '" .
+                                addslashes($c['phone']) . "', '" .
+                                addslashes($c['location']) . "')";
+                            echo '<button type="button" onclick="' . $js . '" class="bg-green-600 text-white px-3 py-1 rounded text-xs">Edit</button>';
+                            // Tombol Hapus
+                            echo '<a href="?delete_contact=' . $c['id'] . '#contact-tab" onclick="return confirm(\'Hapus data kontak ini?\')" class="bg-red-600 text-white px-3 py-1 rounded text-xs">Hapus</a>';
+                            echo '</div>';
+                            echo '</li>';
                         } else {
                             echo '<li class="text-gray-400">Belum ada data kontak/sosial media.</li>';
                         }
@@ -1090,6 +1143,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
                 </div>
                 <div class="flex justify-end">
                     <button type="submit" name="edit_organization" class="bg-warm-wood text-dark-bg px-6 py-2 rounded-lg font-semibold hover:bg-opacity-90">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Modal Edit Aktivitas -->
+    <div id="activityModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-gray-900 rounded-xl p-8 w-full max-w-lg relative">
+            <button onclick="closeActivityModal()" class="absolute top-2 right-2 text-gray-400 hover:text-warm-wood text-2xl">&times;</button>
+            <h3 class="text-xl font-bold mb-4 text-warm-wood">Edit Aktivitas</h3>
+            <form method="post">
+                <input type="hidden" name="activity_id" id="activity_id">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Nama Aktivitas</label>
+                    <input type="text" name="activity_name" id="activity_name" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Deskripsi</label>
+                    <textarea name="activity_description" id="activity_description" rows="2" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required></textarea>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" name="edit_activity" class="bg-warm-wood text-dark-bg px-6 py-2 rounded-lg font-semibold hover:bg-opacity-90">Simpan Perubahan</button>
                 </div>
             </form>
         </div>
@@ -1204,6 +1280,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
         </div>
     </div>
 
+    <!-- Modal Edit Kontak -->
+    <div id="contactModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-gray-900 rounded-xl p-8 w-full max-w-lg relative">
+            <button onclick="closeContactModal()" class="absolute top-2 right-2 text-gray-400 hover:text-warm-wood text-2xl">&times;</button>
+            <h3 class="text-xl font-bold mb-4 text-warm-wood">Edit Kontak</h3>
+            <form method="post">
+                <input type="hidden" name="contact_id" id="contact_id">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Email</label>
+                    <input type="email" name="contact_email" id="contact_email" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Telepon</label>
+                    <input type="tel" name="contact_phone" id="contact_phone" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Lokasi</label>
+                    <input type="text" name="contact_location" id="contact_location" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2">
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" name="edit_contact" class="bg-warm-wood text-dark-bg px-6 py-2 rounded-lg font-semibold hover:bg-opacity-90">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
 
     <script>
         // Tab Navigation
@@ -1245,6 +1348,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
 
         function closeOrgModal() {
             document.getElementById('orgModal').classList.add('hidden');
+        }
+
+        // modal activity 
+        function openActivityModal(id, name, description) {
+            document.getElementById('activity_id').value = id;
+            document.getElementById('activity_name').value = name;
+            document.getElementById('activity_description').value = description;
+            document.getElementById('activityModal').classList.remove('hidden');
+        }
+
+        function closeActivityModal() {
+            document.getElementById('activityModal').classList.add('hidden');
         }
 
         // Modal Edit Skill
@@ -1290,6 +1405,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
 
         function closeArticleModal() {
             document.getElementById('articleModal').classList.add('hidden');
+        }
+
+        // modal Edit Kontak
+        function openContactModal(id, email, phone, location) {
+            document.getElementById('contact_id').value = id;
+            document.getElementById('contact_email').value = email;
+            document.getElementById('contact_phone').value = phone;
+            document.getElementById('contact_location').value = location;
+            document.getElementById('contactModal').classList.remove('hidden');
+        }
+
+        function closeContactModal() {
+            document.getElementById('contactModal').classList.add('hidden');
         }
     </script>
 </body>

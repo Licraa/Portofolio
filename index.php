@@ -149,8 +149,17 @@ if ($activityResult && $activityResult->num_rows > 0) {
     </style>
 </head>
 
-<body class="bg-dark-bg text-light-surface overflow-x-hidden">
-
+<body class="bg-dark-bg text-light-surface min-h-screen">
+    <nav class="bg-gray-900 px-4 py-3 flex items-center justify-between md:hidden">
+        <div class="text-white font-bold text-lg">Portofolio Admin</div>
+        <button id="navToggle" class="text-white focus:outline-none">
+            <!-- Hamburger icon -->
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+    </nav>
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 glass-effect">
         <div class="container mx-auto px-6 py-4">
@@ -454,18 +463,20 @@ if ($activityResult && $activityResult->num_rows > 0) {
             <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 text-warm-wood">Artikel</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 <?php if (count($articles) > 0): foreach ($articles as $article): ?>
-                        <div class="glass-effect rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group">
+                        <div class="glass-effect rounded-2xl p-6 flex flex-col h-full justify-between transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group">
                             <?php if (!empty($article['image'])): ?>
-                                <div class="h-48 rounded-lg mb-6 relative overflow-hidden">
+                                <div class="h-48 rounded-lg mb-6 relative overflow-hidden flex items-center justify-center">
                                     <img src="<?php echo htmlspecialchars($article['image']); ?>" alt="<?php echo htmlspecialchars($article['title']); ?>" class="object-cover w-full h-full" />
                                 </div>
                             <?php endif; ?>
-                            <h3 class="text-xl font-bold mb-3 text-light-surface"><?php echo htmlspecialchars($article['title']); ?></h3>
-                            <p class="text-gray-300 mb-4"><?php echo htmlspecialchars($article['excerpt']); ?></p>
-                            <div class="flex flex-wrap gap-2">
-                                <span class="bg-dark-bg px-3 py-1 rounded-full text-xs"><?php echo date('d M Y', strtotime($article['publish_date'])); ?></span>
+                            <div class="flex-1 flex flex-col">
+                                <h3 class="text-xl font-bold mb-3 text-light-surface"><?php echo htmlspecialchars($article['title']); ?></h3>
+                                <p class="text-gray-300 mb-4 flex-1"><?php echo htmlspecialchars($article['excerpt']); ?></p>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="bg-dark-bg px-3 py-1 rounded-full text-xs"><?php echo date('d M Y', strtotime($article['publish_date'])); ?></span>
+                                </div>
                             </div>
-                            <div class="mt-4">
+                            <div class="mt-auto">
                                 <a href="articles.php?id=<?php echo $article['id']; ?>" class="bg-light-surface text-dark-bg px-4 py-2 rounded-lg font-medium flex items-center justify-center">Lihat Detail</a>
                             </div>
                         </div>
@@ -473,6 +484,7 @@ if ($activityResult && $activityResult->num_rows > 0) {
                 else: ?>
                     <div class="text-gray-400 text-center w-full">Belum ada data artikel.</div>
                 <?php endif; ?>
+
             </div>
         </div>
     </section>
@@ -481,8 +493,8 @@ if ($activityResult && $activityResult->num_rows > 0) {
     <section id="contact" class="py-20 px-4 bg-dark-bg">
         <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
             <!-- Kiri: Info Kontak & Value per Bulan -->
-            <div class="mb-10 md:mb-0">
-                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-warm-wood">Kontak Saya</h2>
+            <div class="mb-10 md:mb-0 glass-effect p-8 rounded-2xl shadow-lg">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-warm-wood text-center">Kontak Saya</h2>
                 <div class="space-y-4 mb-8">
                     <div class="flex items-center gap-3">
                         <span class="w-8 h-8 flex items-center justify-center bg-warm-wood rounded-full"><svg class="w-5 h-5 text-dark-bg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -504,7 +516,7 @@ if ($activityResult && $activityResult->num_rows > 0) {
                         <span class="text-light-surface text-lg"><?php echo htmlspecialchars($contact['location'] ?? '-'); ?></span>
                     </div>
                 </div>
-                <div class="mb-8">
+                <div class="mb-8 glass-effect p-6 rounded-2xl shadow-lg">
                     <div class="text-warm-wood font-semibold text-lg mb-1">Value per Bulan</div>
                     <div class="text-2xl font-bold text-light-surface">Rp <?php echo number_format($profileData['value_per_month'] ?? 0, 0, ',', '.'); ?>,-</div>
                     <div class="text-xs text-gray-400 mt-1">*Harga rata-rata jasa/bisnis per bulan</div>
@@ -533,7 +545,11 @@ if ($activityResult && $activityResult->num_rows > 0) {
                             <label class="block text-sm font-medium mb-2 text-light-surface">Pesan</label>
                             <textarea name="contact_message" rows="5" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-light-surface focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300" required></textarea>
                         </div>
-                        <button type="submit" name="send_message" class="bg-warm-wood text-dark-bg px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg w-full md:w-auto">Kirim Pesan</button>
+                        <div class="flex justify-center">
+                            <button type="submit" name="send_message" class="bg-warm-wood text-dark-bg px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg w-full md:w-auto">
+                                Kirim Pesan
+                            </button>
+                        </div>
                     </form>
                     <?php
                     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
