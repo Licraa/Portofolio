@@ -425,7 +425,7 @@ if ($activityResult && $activityResult->num_rows > 0) {
                                 </div>
                             <?php endif; ?>
                             <h3 class="text-xl font-bold mb-3 text-light-surface"><?php echo htmlspecialchars($project['title']); ?></h3>
-                            <p class="text-gray-300 mb-4"><?php echo htmlspecialchars($project['description']); ?></p>
+                            <p class="text-gray-300 mb-4 text-justify"><?php echo htmlspecialchars($project['description']); ?></p>
                             <div class="flex flex-wrap gap-2">
                                 <?php foreach (explode(',', $project['technologies']) as $tech): ?>
                                     <span class="bg-dark-bg px-3 py-1 rounded-full text-xs"><?php echo htmlspecialchars(trim($tech)); ?></span>

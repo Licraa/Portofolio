@@ -312,6 +312,28 @@ if (isset($_GET['delete_project']) && is_numeric($_GET['delete_project'])) {
     exit;
 }
 
+// handle edit article
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_article'])) {
+    $id = intval($_POST['article_id']);
+    $title = $conn->real_escape_string($_POST['article_title']);
+    $date = $conn->real_escape_string($_POST['article_date']);
+    $excerpt = $conn->real_escape_string($_POST['article_excerpt']);
+    $content = $conn->real_escape_string($_POST['article_content']);
+    $image = $conn->real_escape_string($_POST['article_image']);
+    $conn->query("UPDATE articles SET title='$title', excerpt='$excerpt', content='$content', image='$image', publish_date='$date' WHERE id=$id");
+    header("Location: " . $_SERVER['PHP_SELF'] . "#articles-tab");
+    exit;
+}
+
+
+// --- Handle delete article ---
+if (isset($_GET['delete_article']) && is_numeric($_GET['delete_article'])) {
+    $id = intval($_GET['delete_article']);
+    $conn->query("DELETE FROM articles WHERE id=$id");
+    header("Location: " . strtok($_SERVER['REQUEST_URI'], '?') . "#articles-tab");
+    exit;
+}
+
 // --- Handle save contact & social media ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_contact'])) {
     $email = $conn->real_escape_string($_POST['contact_email']);
@@ -876,14 +898,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
                         $articleQ = $conn->query("SELECT * FROM articles ORDER BY id DESC");
                         if ($articleQ && $articleQ->num_rows > 0) {
                             while ($art = $articleQ->fetch_assoc()) {
-                                echo '<li class="bg-gray-900 rounded p-3 border border-gray-700">'
+                                // JS for edit modal
+                                $js = 'openArticleModal('
+                                    . $art['id'] . ', '
+                                    . '\'' . addslashes($art['title']) . '\', '
+                                    . '\'' . addslashes($art['publish_date']) . '\', '
+                                    . '\'' . addslashes($art['excerpt']) . '\', '
+                                    . '\'' . addslashes($art['content']) . '\', '
+                                    . '\'' . addslashes($art['image']) . '\''
+                                    . ')';
+                                echo '<li class="bg-gray-900 rounded p-3 border border-gray-700 flex flex-col md:flex-row md:items-center md:gap-4">';
+                                echo '<div class="flex-1">'
                                     . '<b>' . htmlspecialchars($art['title']) . '</b> <span class="text-xs text-gray-400">(' . htmlspecialchars($art['publish_date']) . ')</span><br>'
                                     . '<span class="text-xs text-gray-400">' . htmlspecialchars($art['excerpt']) . '</span>'
-                                    . '</li>';
+                                    . '</div>';
+                                echo '<div class="flex gap-2 mt-2 md:mt-0">';
+                                echo '<button type="button" onclick="' . $js . '" class="bg-green-600 text-white px-3 py-1 rounded text-xs">Edit</button>';
+                                echo '<form method="post" style="display:inline;">'
+                                    . '<input type="hidden" name="delete_article_id" value="' . $art['id'] . '">'
+                                    . '<button type="submit" name="delete_article" class="bg-red-600 text-white px-3 py-1 rounded text-xs" onclick="return confirm(\'Hapus artikel ini?\')">Hapus</button>'
+                                    . '</form>';
+                                echo '</div>';
+                                echo '</li>';
                             }
                         } else {
                             echo '<li class="text-gray-400">Belum ada data artikel.</li>';
                         }
+                        ?>
                         ?>
                     </ul>
                 </div>
@@ -1129,6 +1170,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
         </div>
     </div>
 
+    <!-- Modal Edit Artikel -->
+    <div id="articleModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-gray-900 rounded-xl p-8 w-full max-w-lg relative">
+            <button onclick="closeArticleModal()" class="absolute top-2 right-2 text-gray-400 hover:text-warm-wood text-2xl">&times;</button>
+            <h3 class="text-xl font-bold mb-4 text-warm-wood">Edit Artikel</h3>
+            <form method="post">
+                <input type="hidden" name="article_id" id="article_id">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Judul Artikel</label>
+                    <input type="text" name="article_title" id="article_title" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Tanggal Publish</label>
+                    <input type="date" name="article_date" id="article_date" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Ringkasan/Excerpt</label>
+                    <textarea name="article_excerpt" id="article_excerpt" rows="2" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Konten</label>
+                    <textarea name="article_content" id="article_content" rows="5" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium mb-2">Gambar (URL/Path)</label>
+                    <input type="text" name="article_image" id="article_image" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2">
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit" name="edit_article" class="bg-warm-wood text-dark-bg px-6 py-2 rounded-lg font-semibold hover:bg-opacity-90">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
     <script>
         // Tab Navigation
         const tabBtns = document.querySelectorAll('.tab-btn');
@@ -1199,6 +1275,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
 
         function closeProjectModal() {
             document.getElementById('projectModal').classList.add('hidden');
+        }
+
+        // modal Edit Artikel
+        function openArticleModal(id, title, date, excerpt, content, image) {
+            document.getElementById('article_id').value = id;
+            document.getElementById('article_title').value = title;
+            document.getElementById('article_date').value = date;
+            document.getElementById('article_excerpt').value = excerpt;
+            document.getElementById('article_content').value = content;
+            document.getElementById('article_image').value = image;
+            document.getElementById('articleModal').classList.remove('hidden');
+        }
+
+        function closeArticleModal() {
+            document.getElementById('articleModal').classList.add('hidden');
         }
     </script>
 </body>
