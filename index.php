@@ -62,6 +62,14 @@ if ($socialResult && $socialResult->num_rows > 0) {
         $socials[] = $row;
     }
 }
+// Ambil data activity
+$activities = [];
+$activityResult = $conn->query("SELECT * FROM activity ORDER BY id DESC");
+if ($activityResult && $activityResult->num_rows > 0) {
+    while ($row = $activityResult->fetch_assoc()) {
+        $activities[] = $row;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -214,10 +222,10 @@ if ($socialResult && $socialResult->num_rows > 0) {
                     <?php echo htmlspecialchars($profile['profession']); ?>
                 </p>
                 <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 items-center md:justify-start justify-center animate-slide-up">
-                    <button class="bg-warm-wood text-dark-bg w-full md:w-auto px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                        Lihat Karya Saya
+                    <button onclick="document.getElementById('projects').scrollIntoView({ behavior: 'smooth' });" class="bg-warm-wood text-dark-bg w-full md:w-auto px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                        Hubungi Saya
                     </button>
-                    <button class="border-2 border-warm-wood text-warm-wood w-full md:w-auto px-8 py-3 rounded-lg font-semibold hover:bg-warm-wood hover:text-dark-bg transition-all duration-300">
+                    <button onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });" class="border-2 border-warm-wood text-warm-wood w-full md:w-auto px-8 py-3 rounded-lg font-semibold hover:bg-warm-wood hover:text-dark-bg transition-all duration-300">
                         Hubungi Saya
                     </button>
                 </div>
@@ -259,27 +267,28 @@ if ($socialResult && $socialResult->num_rows > 0) {
                             <h3 class="text-3xl font-bold text-center mb-12 text-warm-wood">Pendidikan</h3>
                             <div class="max-w-2xl mx-auto">
                                 <?php if (count($educations) > 0): foreach ($educations as $edu): ?>
-                                    <div class="glass-effect min-h-48 p-8 rounded-2xl animate-fade-in mb-6">
-                                        <div class="flex flex-col items-start justify-between">
-                                            <div class="flex-1">
-                                                <h4 class="text-xl font-semibold text-light-surface mb-2">
-                                                    <?php echo htmlspecialchars($edu['institution']); ?>
-                                                </h4>
-                                                <p class="text-warm-wood font-medium mb-2">
-                                                    <?php echo htmlspecialchars($edu['program']); ?>
-                                                </p>
-                                                <p class="text-gray-300 text-sm">
-                                                    <?php echo htmlspecialchars($edu['description']); ?>
-                                                </p>
-                                            </div>
-                                            <div class="mt-4">
-                                                <div class="bg-warm-wood/20 px-4 py-2 rounded-full">
-                                                    <span class="text-warm-wood font-medium text-sm">Aktif</span>
+                                        <div class="glass-effect min-h-48 p-8 rounded-2xl animate-fade-in mb-6">
+                                            <div class="flex flex-col items-start justify-between">
+                                                <div class="flex-1">
+                                                    <h4 class="text-xl font-semibold text-light-surface mb-2">
+                                                        <?php echo htmlspecialchars($edu['institution']); ?>
+                                                    </h4>
+                                                    <p class="text-warm-wood font-medium mb-2">
+                                                        <?php echo htmlspecialchars($edu['program']); ?>
+                                                    </p>
+                                                    <p class="text-gray-300 text-sm">
+                                                        <?php echo htmlspecialchars($edu['description']); ?>
+                                                    </p>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <div class="bg-warm-wood/20 px-4 py-2 rounded-full">
+                                                        <span class="text-warm-wood font-medium text-sm">Aktif</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                <?php endforeach; else: ?>
+                                    <?php endforeach;
+                                else: ?>
                                     <div class="text-gray-400 text-center">Belum ada data pendidikan.</div>
                                 <?php endif; ?>
                             </div>
@@ -289,31 +298,54 @@ if ($socialResult && $socialResult->num_rows > 0) {
                             <h3 class="text-3xl font-bold text-center mb-12 text-warm-wood">Organisasi</h3>
                             <div class="max-w-2xl mx-auto">
                                 <?php if (count($organizations) > 0): foreach ($organizations as $org): ?>
-                                    <div class="glass-effect min-h-48 p-8 rounded-2xl animate-fade-in mb-6">
-                                        <div class="flex flex-col items-start justify-between">
-                                            <div class="flex-1">
-                                                <h4 class="text-xl font-semibold text-light-surface mb-2">
-                                                    <?php echo htmlspecialchars($org['name']); ?>
-                                                </h4>
-                                                <p class="text-warm-wood font-medium mb-2">
-                                                    <?php echo htmlspecialchars($org['position']); ?>
-                                                </p>
-                                                <p class="text-gray-300 text-sm">
-                                                    <?php echo htmlspecialchars($org['description']); ?>
-                                                </p>
-                                            </div>
-                                            <div class="mt-4">
-                                                <div class="bg-warm-wood/20 px-4 py-2 rounded-full">
-                                                    <span class="text-warm-wood font-medium text-sm">Aktif</span>
+                                        <div class="glass-effect min-h-48 p-8 rounded-2xl animate-fade-in mb-6">
+                                            <div class="flex flex-col items-start justify-between">
+                                                <div class="flex-1">
+                                                    <h4 class="text-xl font-semibold text-light-surface mb-2">
+                                                        <?php echo htmlspecialchars($org['name']); ?>
+                                                    </h4>
+                                                    <p class="text-warm-wood font-medium mb-2">
+                                                        <?php echo htmlspecialchars($org['position']); ?>
+                                                    </p>
+                                                    <p class="text-gray-300 text-sm">
+                                                        <?php echo htmlspecialchars($org['description']); ?>
+                                                    </p>
+                                                </div>
+                                                <div class="mt-4">
+                                                    <div class="bg-warm-wood/20 px-4 py-2 rounded-full">
+                                                        <span class="text-warm-wood font-medium text-sm">Aktif</span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                <?php endforeach; else: ?>
+                                    <?php endforeach;
+                                else: ?>
                                     <div class="text-gray-400 text-center">Belum ada data organisasi.</div>
                                 <?php endif; ?>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl md:text-4xl font-bold text-center mb-8 text-warm-wood">Aktivitas Terbaru</h2>
+                    <div class="max-w-4xl mx-auto">
+                        <?php if (count($activities) > 0): ?>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <?php foreach ($activities as $act): ?>
+                                    <div class="glass-effect p-6 rounded-xl border border-warm-wood shadow-lg animate-fade-in flex items-start space-x-4">
+                                        <span class="w-3 h-3 mt-2 bg-accent-green rounded-full flex-shrink-0"></span>
+                                        <div>
+                                            <p class="text-light-surface font-semibold mb-1"><?php echo htmlspecialchars($act['name']); ?></p>
+                                            <span class="text-gray-400 text-sm"><?php echo htmlspecialchars($act['description']); ?></span>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php else: ?>
+                            <div class="glass-effect p-10 rounded-2xl shadow-lg animate-fade-in text-center border border-warm-wood">
+                                <span class="text-gray-400">Belum ada data aktivitas.</span>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -374,6 +406,7 @@ if ($socialResult && $socialResult->num_rows > 0) {
         }
     </style>
 
+    <!-- Skills Section Dinamis -->
     <?php include 'skills.php' ?>
 
 
@@ -385,8 +418,10 @@ if ($socialResult && $socialResult->num_rows > 0) {
                 <?php if (count($projects) > 0): foreach ($projects as $project): ?>
                         <div class="glass-effect rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group">
                             <?php if (!empty($project['image'])): ?>
-                                <div class="h-48 rounded-lg mb-6 relative overflow-hidden">
-                                    <img src="<?php echo htmlspecialchars($project['image']); ?>" alt="<?php echo htmlspecialchars($project['title']); ?>" class="object-cover w-full h-full" />
+                                <div class="flex justify-center mb-6">
+                                    <img src="<?php echo htmlspecialchars($project['image']); ?>"
+                                        alt="<?php echo htmlspecialchars($project['title']); ?>"
+                                        class="w-full h-40 object-contain rounded-lg shadow border-2 border-warm-wood transition-transform duration-300 group-hover:scale-105 bg-glass" />
                                 </div>
                             <?php endif; ?>
                             <h3 class="text-xl font-bold mb-3 text-light-surface"><?php echo htmlspecialchars($project['title']); ?></h3>
@@ -442,60 +477,72 @@ if ($socialResult && $socialResult->num_rows > 0) {
         </div>
     </section>
 
-    <!-- Contact Section Dinamis -->
-    <section id="contact" class="py-20">
-        <div class="container mx-auto px-6">
-            <div class="max-w-4xl mx-auto text-center">
-                <h2 class="text-4xl md:text-5xl font-bold mb-16 text-warm-wood">Mari Berkolaborasi</h2>
-                <p class="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
-                    <?php echo htmlspecialchars($contact['description'] ?? 'Punya proyek menarik? Mari diskusikan bagaimana kita bisa menciptakan sesuatu yang luar biasa bersama.'); ?>
-                </p>
-                <div class="grid md:grid-cols-3 gap-8 mb-12">
-                    <div class="glass-effect p-6 rounded-xl transform hover:scale-105 transition-all duration-300">
-                        <div class="w-12 h-12 bg-warm-wood rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-6 h-6 text-dark-bg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Contact Section Sederhana -->
+    <section id="contact" class="py-20 px-4 bg-dark-bg">
+        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <!-- Kiri: Info Kontak & Value per Bulan -->
+            <div class="mb-10 md:mb-0">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6 text-warm-wood">Kontak Saya</h2>
+                <div class="space-y-4 mb-8">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 flex items-center justify-center bg-warm-wood rounded-full"><svg class="w-5 h-5 text-dark-bg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26c.67.36 1.45.36 2.12 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="font-semibold mb-2">Email</h3>
-                        <p class="text-gray-300"><?php echo htmlspecialchars($contact['email'] ?? ''); ?></p>
+                            </svg></span>
+                        <span class="text-light-surface text-lg"><?php echo htmlspecialchars($contact['email'] ?? '-'); ?></span>
                     </div>
-
-                    <div class="glass-effect p-6 rounded-xl transform hover:scale-105 transition-all duration-300">
-                        <div class="w-12 h-12 bg-warm-wood rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-6 h-6 text-dark-bg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 flex items-center justify-center bg-warm-wood rounded-full"><svg class="w-5 h-5 text-dark-bg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="font-semibold mb-2">Telepon</h3>
-                        <p class="text-gray-300"><?php echo htmlspecialchars($contact['phone'] ?? ''); ?></p>
+                            </svg></span>
+                        <span class="text-light-surface text-lg"><?php echo htmlspecialchars($contact['phone'] ?? '-'); ?></span>
                     </div>
-
-                    <div class="glass-effect p-6 rounded-xl transform hover:scale-105 transition-all duration-300">
-                        <div class="w-12 h-12 bg-warm-wood rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-6 h-6 text-dark-bg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 flex items-center justify-center bg-warm-wood rounded-full"><svg class="w-5 h-5 text-dark-bg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="font-semibold mb-2">Lokasi</h3>
-                        <p class="text-gray-300"><?php echo htmlspecialchars($contact['location'] ?? ''); ?></p>
+                            </svg></span>
+                        <span class="text-light-surface text-lg"><?php echo htmlspecialchars($contact['location'] ?? '-'); ?></span>
                     </div>
                 </div>
-                <div class="space-x-6">
-                    <button class="bg-warm-wood text-dark-bg px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg">
-                        Kirim Pesan
-                    </button>
-                    <button class="border-2 border-warm-wood text-warm-wood px-8 py-3 rounded-lg font-semibold hover:bg-warm-wood hover:text-dark-bg transition-all duration-300">
-                        Download CV
-                    </button>
+                <div class="mb-8">
+                    <div class="text-warm-wood font-semibold text-lg mb-1">Value per Bulan</div>
+                    <div class="text-2xl font-bold text-light-surface">Rp <?php echo number_format($profileData['value_per_month'] ?? 0, 0, ',', '.'); ?>,-</div>
+                    <div class="text-xs text-gray-400 mt-1">*Harga rata-rata jasa/bisnis per bulan</div>
                 </div>
-                <div class="flex justify-center space-x-6 mt-8">
+                <div class="flex space-x-4 mt-6">
                     <?php foreach ($socials as $soc): ?>
-                        <a href="<?php echo htmlspecialchars($soc['url']); ?>" class="text-gray-400 hover:text-warm-wood transition-colors duration-300" target="_blank">
-                            <i class="fab fa-<?php echo htmlspecialchars($soc['platform']); ?> text-2xl"></i>
+                        <a href="<?php echo htmlspecialchars($soc['url']); ?>" class="text-gray-400 hover:text-warm-wood transition-colors duration-300 text-2xl" target="_blank">
+                            <i class="fab fa-<?php echo htmlspecialchars($soc['platform']); ?>"></i>
                         </a>
                     <?php endforeach; ?>
+                </div>
+            </div>
+            <!-- Kanan: Form Kontak -->
+            <div>
+                <div class="glass-effect rounded-2xl p-8 md:p-10 shadow-lg">
+                    <form method="post" action="" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-light-surface">Nama</label>
+                            <input type="text" name="contact_name" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-light-surface focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300" required />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-light-surface">Email</label>
+                            <input type="email" name="contact_email" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-light-surface focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300" required />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-light-surface">Pesan</label>
+                            <textarea name="contact_message" rows="5" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-light-surface focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300" required></textarea>
+                        </div>
+                        <button type="submit" name="send_message" class="bg-warm-wood text-dark-bg px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg w-full md:w-auto">Kirim Pesan</button>
+                    </form>
+                    <?php
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
+                        $name = $conn->real_escape_string($_POST['contact_name']);
+                        $email = $conn->real_escape_string($_POST['contact_email']);
+                        $message = $conn->real_escape_string($_POST['contact_message']);
+                        $conn->query("INSERT INTO contact_messages (name, email, message, created_at) VALUES ('$name', '$email', '$message', NOW())");
+                    }
+                    ?>
                 </div>
             </div>
         </div>

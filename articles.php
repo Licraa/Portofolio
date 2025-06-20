@@ -1,3 +1,15 @@
+<?php
+include 'admin/db.php';
+// Ambil artikel berdasarkan id dari query string
+$article = null;
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = intval($_GET['id']);
+    $result = $conn->query("SELECT * FROM articles WHERE id=$id LIMIT 1");
+    if ($result && $result->num_rows > 0) {
+        $article = $result->fetch_assoc();
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
 
@@ -189,19 +201,18 @@
             <div class="container mx-auto px-6">
                 <div class="max-w-4xl mx-auto text-center animate-slide-up">
                     <h1 class="text-4xl md:text-6xl font-bold mb-6 text-shadow">
-                        <span class="text-warm-wood">Understanding React Hooks</span>
-                        <span class="text-light-surface block mt-2">in Depth</span>
+                        <span class="text-warm-wood"><?php echo $article ? htmlspecialchars($article['title']) : 'Artikel Tidak Ditemukan'; ?></span>
                     </h1>
                     <div class="flex items-center justify-center space-x-4 text-gray-400 mb-8">
-                        <span>Published on April 5, 2025</span>
+                        <span><?php echo $article ? date('d M Y', strtotime($article['publish_date'])) : '-'; ?></span>
                         <span>•</span>
-                        <span>By JhonDoe</span>
+                        <span>By <?php echo $article ? htmlspecialchars($article['author'] ?? 'Admin') : '-'; ?></span>
                     </div>
-                    <div class="glass-effect rounded-2xl p-2 max-w-3xl mx-auto">
-                        <img src="https://placehold.co/800x400/1e293b/93c5fd?text=React+Hooks"
-                            alt="Article Banner"
-                            class="w-full rounded-lg shadow-lg" />
-                    </div>
+                    <?php if ($article && !empty($article['image'])): ?>
+                        <div class="glass-effect rounded-2xl p-2 max-w-3xl mx-auto">
+                            <img src="<?php echo htmlspecialchars($article['image']); ?>" alt="Article Banner" class="w-full rounded-lg shadow-lg" />
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </section>
@@ -212,39 +223,11 @@
                 <div class="max-w-4xl mx-auto">
                     <div class="glass-effect rounded-2xl p-8 md:p-12 animate-fade-in">
                         <div class="prose-custom">
-                            <p class="text-lg leading-relaxed">
-                                React Hooks are a game-changer in the world of React development. Introduced in React 16.8, they allow developers to use state and other React features without writing classes. This article dives deep into how hooks work under the hood, their benefits, and common use cases.
-                            </p>
-
-                            <h2>What Are React Hooks?</h2>
-                            <p>
-                                Hooks are functions that let you "hook into" React state and lifecycle features from function components. They provide a more direct API to the React concepts you already know: props, state, context, refs, and lifecycle.
-                            </p>
-
-                            <h2>The Most Commonly Used Hooks</h2>
-                            <ul class="list-disc pl-6 space-y-3 mb-6">
-                                <li><code>useState</code>: For managing component state.</li>
-                                <li><code>useEffect</code>: For side effects like data fetching or subscriptions.</li>
-                                <li><code>useContext</code>: To consume React Context without wrapping your component in a Consumer.</li>
-                            </ul>
-
-                            <h2>Why Use Hooks?</h2>
-                            <p>
-                                Hooks make it easier to reuse logic between components, reduce boilerplate code, and simplify complex patterns like higher-order components and render props. They also enable better composition of logic across components.
-                            </p>
-
-                            <blockquote>
-                                "Hooks solve a wide variety of seemingly unrelated problems in React that we've encountered over five years of developing and maintaining thousands of components."
-                            </blockquote>
-
-                            <h2>Best Practices</h2>
-                            <p>
-                                Always call hooks at the top level of your React function. Don't call hooks inside loops, conditions, or nested functions. Also, only call hooks from React functions — not regular JavaScript functions.
-                            </p>
-
-                            <p class="mt-8 text-lg">
-                                Hooks are one of the most powerful tools in modern React development. If used correctly, they can significantly improve code readability, maintainability, and performance.
-                            </p>
+                            <?php if ($article): ?>
+                                <div class="text-lg leading-relaxed"><?php echo nl2br($article['content']); ?></div>
+                            <?php else: ?>
+                                <div class="text-gray-400 text-center">Artikel tidak ditemukan.</div>
+                            <?php endif; ?>
                         </div>
                     </div>
 
@@ -257,56 +240,9 @@
                             </svg>
                             Back to Articles
                         </a>
-
-                        <div class="flex space-x-4">
-                            <button class="p-3 glass-effect rounded-lg hover:bg-warm-wood/20 transition-all duration-300 transform hover:scale-105">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                </svg>
-                            </button>
-                            <button class="p-3 glass-effect rounded-lg hover:bg-warm-wood/20 transition-all duration-300 transform hover:scale-105">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Comments Section -->
-                    <div class="mt-20 animate-fade-in">
-                        <div class="glass-effect rounded-2xl p-8">
-                            <h3 class="text-2xl font-bold mb-6 text-warm-wood">Leave a Comment</h3>
-                            <form method="POST" class="space-y-6">
-                                <div class="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label class="block text-sm font-medium mb-2 text-gray-300">Your Name</label>
-                                        <input type="text"
-                                            class="w-full bg-dark-bg/50 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300"
-                                            required />
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium mb-2 text-gray-300">Your Email</label>
-                                        <input type="email"
-                                            class="w-full bg-dark-bg/50 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300"
-                                            required />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label class="block text-sm font-medium mb-2 text-gray-300">Your Comment</label>
-                                    <textarea rows="5"
-                                        class="w-full bg-dark-bg/50 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300"
-                                        required></textarea>
-                                </div>
-                                <button type="submit"
-                                    class="bg-warm-wood text-dark-bg px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg">
-                                    Post Comment
-                                </button>
-                            </form>
-                        </div>
                     </div>
                 </div>
             </div>
-        </section>
     </main>
 
     <!-- Footer -->
