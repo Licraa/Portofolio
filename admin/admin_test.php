@@ -428,6 +428,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
                         'light-surface': '#F5F5F5',
                         'accent-green': '#1D4ED8',
                         'warm-wood': '#D4A574'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.8s ease-in-out',
+                        'slide-up': 'slideUp 0.8s ease-out',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 2s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': {
+                                opacity: '0'
+                            },
+                            '100%': {
+                                opacity: '1'
+                            }
+                        },
+                        slideUp: {
+                            '0%': {
+                                opacity: '0',
+                                transform: 'translateY(30px)'
+                            },
+                            '100%': {
+                                opacity: '1',
+                                transform: 'translateY(0)'
+                            }
+                        },
+                        float: {
+                            '0%, 100%': {
+                                transform: 'translateY(0px)'
+                            },
+                            '50%': {
+                                transform: 'translateY(-10px)'
+                            }
+                        },
+                        pulseGlow: {
+                            '0%': {
+                                boxShadow: '0 0 5px rgba(74, 93, 35, 0.3)'
+                            },
+                            '100%': {
+                                boxShadow: '0 0 20px rgba(74, 93, 35, 0.6)'
+                            }
+                        }
                     }
                 }
             }
@@ -439,30 +481,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
             background: rgba(245, 245, 245, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
+        .text-shadow {
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 
-<body class="bg-dark-bg text-light-surface min-h-screen">
+<body class="bg-dark-bg text-light-surface min-h-screen font-sans">
     <!-- Responsive Navbar (Admin) -->
-    <nav class="bg-gray-900 px-4 py-3 flex items-center justify-between md:hidden">
-        <div class="text-white font-bold text-lg">Portofolio Admin</div>
-        <button id="navToggle" class="text-white focus:outline-none">
+    <nav class="bg-gray-900 px-4 py-3 flex items-center justify-between md:hidden shadow-lg sticky top-0 z-50 glass-effect">
+        <div class="text-warm-wood font-bold text-lg tracking-wide">Portofolio Admin</div>
+        <button id="navToggle" class="text-warm-wood focus:outline-none">
             <!-- Hamburger icon -->
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M4 6h16M4 12h16M4 18h16" />
             </svg>
         </button>
     </nav>
     <!-- Mobile Tabs Menu -->
-    <div id="mobileMenu" class="md:hidden bg-gray-800 text-white px-4 py-2 hidden">
-        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="profile"><span class="mr-2">👤</span>Profil</button>
-        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="about"><span class="mr-2">📝</span>Tentang</button>
-        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="skills"><span class="mr-2">🛠️</span>Skills</button>
-        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="projects"><span class="mr-2">🚀</span>Proyek</button>
-        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="articles"><span class="mr-2">📰</span>Artikel</button>
-        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="contact"><span class="mr-2">📞</span>Kontak</button>
-        <button class="tab-btn block w-full text-left py-2 px-2 hover:text-warm-wood" data-tab="contact-messages"><span class="mr-2">📬</span>Pesan Masuk</button>
+    <div id="mobileMenu" class="hidden md:hidden mt-2 space-y-2 px-2 pb-2 bg-gray-900 rounded-b-xl shadow-lg glass-effect">
+        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="profile"><span>👤</span>Profil</button>
+        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="about"><span>📝</span>Tentang</button>
+        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="skills"><span>🛠️</span>Skills</button>
+        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="projects"><span>🚀</span>Proyek</button>
+        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="articles"><span>📰</span>Artikel</button>
+        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="contact"><span>📞</span>Kontak</button>
+        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="contact-messages"><span>📬</span>Pesan Masuk</button>
     </div>
     <script>
         // Hamburger for mobile menu
@@ -471,47 +517,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
         navToggle && navToggle.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
         });
-
         // Tab switching for mobile menu
         document.querySelectorAll('#mobileMenu .tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
-                // Hide mobile menu after click
                 mobileMenu.classList.add('hidden');
             });
         });
     </script>
-
     <!-- Navigation Tabs (Desktop) -->
-    <nav class="bg-gray-900 border-b border-gray-800 shadow-md hidden md:block">
-        <div class="container mx-auto px-6">
+    <nav class="top-0 left-0 right-0 z-50 glass-effect shadow-lg backdrop-blur-md sticky hidden md:block">
+        <div class="container mx-auto px-4 py-2">
             <div class="flex flex-wrap items-center justify-between">
                 <div class="flex space-x-2 md:space-x-6 overflow-x-auto py-2 w-full md:w-auto">
-                    <button class="tab-btn active py-3 px-5 md:px-6 text-warm-wood font-semibold border-b-2 border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none"
-                        data-tab="profile">
+                    <button class="tab-btn active py-2 px-4 md:px-6 text-warm-wood font-semibold border-b-2 border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="profile">
                         <span class="mr-2">👤</span>Profil
                     </button>
-                    <button class="tab-btn py-3 px-5 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none"
-                        data-tab="about">
+                    <button class="tab-btn py-2 px-4 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="about">
                         <span class="mr-2">📝</span>Tentang
                     </button>
-                    <button class="tab-btn py-3 px-5 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none"
-                        data-tab="skills">
+                    <button class="tab-btn py-2 px-4 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="skills">
                         <span class="mr-2">🛠️</span>Skills
                     </button>
-                    <button class="tab-btn py-3 px-5 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none"
-                        data-tab="projects">
+                    <button class="tab-btn py-2 px-4 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="projects">
                         <span class="mr-2">🚀</span>Proyek
                     </button>
-                    <button class="tab-btn py-3 px-5 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none"
-                        data-tab="articles">
+                    <button class="tab-btn py-2 px-4 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="articles">
                         <span class="mr-2">📰</span>Artikel
                     </button>
-                    <button class="tab-btn py-3 px-5 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none"
-                        data-tab="contact">
+                    <button class="tab-btn py-2 px-4 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="contact">
                         <span class="mr-2">📞</span>Kontak
                     </button>
-                    <button class="tab-btn py-3 px-5 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none"
-                        data-tab="contact-messages">
+                    <button class="tab-btn py-2 px-4 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="contact-messages">
                         <span class="mr-2">📬</span>Pesan Masuk
                     </button>
                 </div>
@@ -1094,7 +1130,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
     </main>
 
     <!-- Success/Error Messages -->
-    <div id="messageContainer" class="fixed top-4 right-4 z-50"></div>
+    <div id="messageContainer" class="fixed top-4 right
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Success/Error Messages -->
+    <div id=" messageContainer" class="fixed top-4 right-4 z-50"></div>
 
     <!-- Modal Edit Pendidikan -->
     <div id="eduModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
