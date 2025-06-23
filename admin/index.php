@@ -283,7 +283,7 @@ if ($conn->query("SHOW TABLES LIKE 'contact_messages'")->num_rows > 0) {
         <!-- Overlay (mobile only) -->
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity duration-300"></div>
         <!-- Sidebar -->
-        <aside id="sidebar" class="w-72 glass-morphism border-r border-border-color flex flex-col py-8 px-6 fixed md:sticky top-0 h-full md:h-screen z-40 sidebar-scroll overflow-y-auto -left-80 md:left-0 transition-all duration-300">
+        <aside id="sidebar" class="max-w-xs sm:max-w-sm md:w-72 w-full glass-morphism border-r border-border-color flex flex-col justify-between py-4 px-2 sm:py-6 sm:px-4 fixed md:sticky top-0 h-screen z-40 sidebar-scroll overflow-hidden -left-80 md:left-0 transition-all duration-300">
             <!-- Logo Section -->
             <div class="flex items-center gap-4 mb-12">
                 <div class="relative">
@@ -331,7 +331,7 @@ if ($conn->query("SHOW TABLES LIKE 'contact_messages'")->num_rows > 0) {
             </nav>
 
             <!-- User Profile Card -->
-            <div class="mt-8 p-6 glass-card rounded-2xl">
+            <div class="mt-8 p-6 ">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center">
                         <i class="fas fa-user text-white"></i>
@@ -349,7 +349,7 @@ if ($conn->query("SHOW TABLES LIKE 'contact_messages'")->num_rows > 0) {
                 </form>
             </div>
         </aside>
-        <main class="flex-1 p-4 sm:p-8 md:p-12 bg-dark-bg min-h-screen overflow-x-auto">
+        <main class="flex-1 p-2 sm:p-4 md:p-8 bg-dark-bg min-h-screen overflow-x-hidden">
             <!-- Hamburger (mobile only) -->
             <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
                 <span class="sr-only">Buka navigasi</span>
@@ -363,88 +363,88 @@ if ($conn->query("SHOW TABLES LIKE 'contact_messages'")->num_rows > 0) {
             </div>
 
             <!-- Quick Stats Cards -->
-            <div class="grid grid-cols-2 gap-4 md:gap-8 mb-12">
+            <div class="grid grid-cols-2 gap-2 md:gap-4 mb-8">
                 <!-- Profile Card -->
-                <div class="glass-card rounded-3xl p-4 md:p-8 card-hover shadow-2xl border border-border-color relative overflow-hidden min-h-[180px] md:min-h-[260px] flex flex-col justify-between items-center text-center md:items-start md:text-left">
-                    <div class="absolute top-0 right-0 w-20 h-20 md:w-32 md:h-32 bg-gradient-to-br from-accent-primary/20 to-transparent rounded-full -translate-y-10 translate-x-10 md:-translate-y-16 md:translate-x-16"></div>
+                <div class="glass-card rounded-2xl p-2 md:p-4 card-hover shadow-2xl border border-border-color relative overflow-hidden min-h-[120px] md:min-h-[180px] flex flex-col justify-between items-center text-center md:items-start md:text-left">
+                    <div class="absolute top-0 right-0 w-12 h-12 md:w-20 md:h-20 bg-gradient-to-br from-accent-primary/20 to-transparent rounded-full -translate-y-6 translate-x-6 md:-translate-y-10 md:translate-x-10"></div>
                     <div class="relative z-10 w-full flex flex-col items-center md:items-start">
-                        <div class="gradient-primary text-white rounded-2xl p-3 md:p-4 mb-4 md:mb-6 w-fit mx-auto md:mx-0">
-                            <i class="fas fa-user text-xl md:text-2xl"></i>
+                        <div class="gradient-primary text-white rounded-2xl p-2 md:p-3 mb-2 md:mb-4 w-fit mx-auto md:mx-0">
+                            <i class="fas fa-user text-base md:text-xl"></i>
                         </div>
-                        <h3 class="text-lg md:text-2xl font-bold mb-2 md:mb-3 text-text-primary">Profil</h3>
-                        <p class="text-2xl md:text-4xl font-black text-accent-primary mb-2 md:mb-4"></p>
-                        <p class="text-xs md:text-base text-text-secondary mb-3 md:mb-6">Data profil </p>
-                        <a href="profile.php" class="inline-flex items-center gap-2 text-accent-primary hover:text-accent-secondary font-semibold transition-colors group text-sm md:text-base">
+                        <h3 class="text-base md:text-lg font-bold mb-1 md:mb-2 text-text-primary">Profil</h3>
+                        <p class="text-lg md:text-2xl font-black text-accent-primary mb-1 md:mb-2"></p>
+                        <p class="text-xs md:text-sm text-text-secondary mb-2 md:mb-4">Data profil </p>
+                        <a href="profile.php" class="inline-flex items-center gap-2 text-accent-primary hover:text-accent-secondary font-semibold transition-colors group text-xs md:text-sm">
                             <span>Kelola Profil</span>
-                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300"></i>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300 text-xs md:text-base"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Skills Card -->
-                <div class="glass-card rounded-3xl p-4 md:p-8 card-hover shadow-2xl border border-border-color relative overflow-hidden min-h-[180px] md:min-h-[260px] flex flex-col justify-between items-center text-center md:items-start md:text-left">
-                    <div class="absolute top-0 right-0 w-20 h-20 md:w-32 md:h-32 bg-gradient-to-br from-accent-success/20 to-transparent rounded-full -translate-y-10 translate-x-10 md:-translate-y-16 md:translate-x-16"></div>
+                <div class="glass-card rounded-2xl p-2 md:p-4 card-hover shadow-2xl border border-border-color relative overflow-hidden min-h-[120px] md:min-h-[180px] flex flex-col justify-between items-center text-center md:items-start md:text-left">
+                    <div class="absolute top-0 right-0 w-12 h-12 md:w-20 md:h-20 bg-gradient-to-br from-accent-success/20 to-transparent rounded-full -translate-y-6 translate-x-6 md:-translate-y-10 md:translate-x-10"></div>
                     <div class="relative z-10 w-full flex flex-col items-center md:items-start">
-                        <div class="gradient-success text-white rounded-2xl p-3 md:p-4 mb-4 md:mb-6 w-fit mx-auto md:mx-0">
-                            <i class="fas fa-bolt text-xl md:text-2xl"></i>
+                        <div class="gradient-success text-white rounded-2xl p-2 md:p-3 mb-2 md:mb-4 w-fit mx-auto md:mx-0">
+                            <i class="fas fa-bolt text-base md:text-xl"></i>
                         </div>
-                        <h3 class="text-lg md:text-2xl font-bold mb-2 md:mb-3 text-text-primary">Keahlian</h3>
-                        <p class="text-2xl md:text-4xl font-black text-accent-success mb-2 md:mb-4"><?php echo $skillsCount; ?>+</p>
-                        <p class="text-xs md:text-base text-text-secondary mb-3 md:mb-6">Skill terdaftar</p>
-                        <a href="skills.php" class="inline-flex items-center gap-2 text-accent-success hover:text-green-400 font-semibold transition-colors group text-sm md:text-base">
+                        <h3 class="text-base md:text-lg font-bold mb-1 md:mb-2 text-text-primary">Keahlian</h3>
+                        <p class="text-lg md:text-2xl font-black text-accent-success mb-1 md:mb-2"><?php echo $skillsCount; ?>+</p>
+                        <p class="text-xs md:text-sm text-text-secondary mb-2 md:mb-4">Skill terdaftar</p>
+                        <a href="skills.php" class="inline-flex items-center gap-2 text-accent-success hover:text-green-400 font-semibold transition-colors group text-xs md:text-sm">
                             <span>Kelola Keahlian</span>
-                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300"></i>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300 text-xs md:text-base"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Projects Card -->
-                <div class="glass-card rounded-3xl p-4 md:p-8 card-hover shadow-2xl border border-border-color relative overflow-hidden min-h-[180px] md:min-h-[260px] flex flex-col justify-between items-center text-center md:items-start md:text-left">
-                    <div class="absolute top-0 right-0 w-20 h-20 md:w-32 md:h-32 bg-gradient-to-br from-accent-primary/20 to-transparent rounded-full -translate-y-10 translate-x-10 md:-translate-y-16 md:translate-x-16"></div>
+                <div class="glass-card rounded-2xl p-2 md:p-4 card-hover shadow-2xl border border-border-color relative overflow-hidden min-h-[120px] md:min-h-[180px] flex flex-col justify-between items-center text-center md:items-start md:text-left">
+                    <div class="absolute top-0 right-0 w-12 h-12 md:w-20 md:h-20 bg-gradient-to-br from-accent-primary/20 to-transparent rounded-full -translate-y-6 translate-x-6 md:-translate-y-10 md:translate-x-10"></div>
                     <div class="relative z-10 w-full flex flex-col items-center md:items-start">
-                        <div class="gradient-primary text-white rounded-2xl p-3 md:p-4 mb-4 md:mb-6 w-fit mx-auto md:mx-0">
-                            <i class="fas fa-rocket text-xl md:text-2xl"></i>
+                        <div class="gradient-primary text-white rounded-2xl p-2 md:p-3 mb-2 md:mb-4 w-fit mx-auto md:mx-0">
+                            <i class="fas fa-rocket text-base md:text-xl"></i>
                         </div>
-                        <h3 class="text-lg md:text-2xl font-bold mb-2 md:mb-3 text-text-primary">Proyek</h3>
-                        <p class="text-2xl md:text-4xl font-black text-accent-primary mb-2 md:mb-4"><?php echo $projectsCount; ?></p>
-                        <p class="text-xs md:text-base text-text-secondary mb-3 md:mb-6">Proyek selesai</p>
-                        <a href="project.php" class="inline-flex items-center gap-2 text-accent-primary hover:text-accent-secondary font-semibold transition-colors group text-sm md:text-base">
+                        <h3 class="text-base md:text-lg font-bold mb-1 md:mb-2 text-text-primary">Proyek</h3>
+                        <p class="text-lg md:text-2xl font-black text-accent-primary mb-1 md:mb-2"><?php echo $projectsCount; ?></p>
+                        <p class="text-xs md:text-sm text-text-secondary mb-2 md:mb-4">Proyek selesai</p>
+                        <a href="project.php" class="inline-flex items-center gap-2 text-accent-primary hover:text-accent-secondary font-semibold transition-colors group text-xs md:text-sm">
                             <span>Kelola Proyek</span>
-                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300"></i>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300 text-xs md:text-base"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Articles Card -->
-                <div class="glass-card rounded-3xl p-4 md:p-8 card-hover shadow-2xl border border-border-color relative overflow-hidden min-h-[180px] md:min-h-[260px] flex flex-col justify-between items-center text-center md:items-start md:text-left">
-                    <div class="absolute top-0 right-0 w-20 h-20 md:w-32 md:h-32 bg-gradient-to-br from-accent-primary/20 to-transparent rounded-full -translate-y-10 translate-x-10 md:-translate-y-16 md:translate-x-16"></div>
+                <div class="glass-card rounded-2xl p-2 md:p-4 card-hover shadow-2xl border border-border-color relative overflow-hidden min-h-[120px] md:min-h-[180px] flex flex-col justify-between items-center text-center md:items-start md:text-left">
+                    <div class="absolute top-0 right-0 w-12 h-12 md:w-20 md:h-20 bg-gradient-to-br from-accent-primary/20 to-transparent rounded-full -translate-y-6 translate-x-6 md:-translate-y-10 md:translate-x-10"></div>
                     <div class="relative z-10 w-full flex flex-col items-center md:items-start">
-                        <div class="gradient-primary text-white rounded-2xl p-3 md:p-4 mb-4 md:mb-6 w-fit mx-auto md:mx-0">
-                            <i class="fas fa-edit text-xl md:text-2xl"></i>
+                        <div class="gradient-primary text-white rounded-2xl p-2 md:p-3 mb-2 md:mb-4 w-fit mx-auto md:mx-0">
+                            <i class="fas fa-edit text-base md:text-xl"></i>
                         </div>
-                        <h3 class="text-lg md:text-2xl font-bold mb-2 md:mb-3 text-text-primary">Artikel</h3>
-                        <p class="text-2xl md:text-4xl font-black text-accent-primary mb-2 md:mb-4"><?php echo $articlesCount; ?></p>
-                        <p class="text-xs md:text-base text-text-secondary mb-3 md:mb-6">Artikel terpublikasi</p>
-                        <a href="articles.php" class="inline-flex items-center gap-2 text-accent-primary hover:text-accent-secondary font-semibold transition-colors group text-sm md:text-base">
+                        <h3 class="text-base md:text-lg font-bold mb-1 md:mb-2 text-text-primary">Artikel</h3>
+                        <p class="text-lg md:text-2xl font-black text-accent-primary mb-1 md:mb-2"><?php echo $articlesCount; ?></p>
+                        <p class="text-xs md:text-sm text-text-secondary mb-2 md:mb-4">Artikel terpublikasi</p>
+                        <a href="articles.php" class="inline-flex items-center gap-2 text-accent-primary hover:text-accent-secondary font-semibold transition-colors group text-xs md:text-sm">
                             <span>Kelola Artikel</span>
-                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300"></i>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300 text-xs md:text-base"></i>
                         </a>
                     </div>
                 </div>
 
                 <!-- Contact Card -->
-                <div class="glass-card rounded-3xl p-4 md:p-8 card-hover shadow-2xl border border-border-color relative overflow-hidden min-h-[180px] md:min-h-[260px] flex flex-col justify-between items-center text-center md:items-start md:text-left">
-                    <div class="absolute top-0 right-0 w-20 h-20 md:w-32 md:h-32 bg-gradient-to-br from-accent-success/20 to-transparent rounded-full -translate-y-10 translate-x-10 md:-translate-y-16 md:translate-x-16"></div>
+                <div class="glass-card rounded-2xl p-2 md:p-4 card-hover shadow-2xl border border-border-color relative overflow-hidden min-h-[120px] md:min-h-[180px] flex flex-col justify-between items-center text-center md:items-start md:text-left">
+                    <div class="absolute top-0 right-0 w-12 h-12 md:w-20 md:h-20 bg-gradient-to-br from-accent-success/20 to-transparent rounded-full -translate-y-6 translate-x-6 md:-translate-y-10 md:translate-x-10"></div>
                     <div class="relative z-10 w-full flex flex-col items-center md:items-start">
-                        <div class="gradient-success text-white rounded-2xl p-3 md:p-4 mb-4 md:mb-6 w-fit mx-auto md:mx-0">
-                            <i class="fas fa-phone text-xl md:text-2xl"></i>
+                        <div class="gradient-success text-white rounded-2xl p-2 md:p-3 mb-2 md:mb-4 w-fit mx-auto md:mx-0">
+                            <i class="fas fa-phone text-base md:text-xl"></i>
                         </div>
-                        <h3 class="text-lg md:text-2xl font-bold mb-2 md:mb-3 text-text-primary">Kontak</h3>
-                        <p class="text-2xl md:text-4xl font-black text-accent-success mb-2 md:mb-4"><?php echo $contactsCount; ?></p>
-                        <p class="text-xs md:text-base text-text-secondary mb-3 md:mb-6">Data kontak aktif</p>
-                        <a href="contact.php" class="inline-flex items-center gap-2 text-accent-success hover:text-green-400 font-semibold transition-colors group text-sm md:text-base">
+                        <h3 class="text-base md:text-lg font-bold mb-1 md:mb-2 text-text-primary">Kontak</h3>
+                        <p class="text-lg md:text-2xl font-black text-accent-success mb-1 md:mb-2"><?php echo $contactsCount; ?></p>
+                        <p class="text-xs md:text-sm text-text-secondary mb-2 md:mb-4">Data kontak aktif</p>
+                        <a href="contact.php" class="inline-flex items-center gap-2 text-accent-success hover:text-green-400 font-semibold transition-colors group text-xs md:text-sm">
                             <span>Kelola Kontak</span>
-                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300"></i>
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300 text-xs md:text-base"></i>
                         </a>
                     </div>
                 </div>
