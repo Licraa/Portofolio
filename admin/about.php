@@ -251,7 +251,7 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
                 </a>
             </nav>
             <!-- User Profile Card -->
-            <div class="mt-8 p-6 glass-card rounded-2xl">
+            <div class="mt-8 p-6 ">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center">
                         <i class="fas fa-user text-white"></i>
@@ -269,14 +269,14 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
                 </form>
             </div>
         </aside>
-        <main class="flex-1 p-4 sm:p-8 md:p-12 bg-dark-bg min-h-screen overflow-x-auto">
+        <main class="flex-1 p-8 md:p-12 bg-dark-bg min-h-screen">
             <!-- Hamburger (mobile only) -->
             <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
                 <span class="sr-only">Buka navigasi</span>
                 <i class="fas fa-bars text-2xl text-white"></i>
             </button>
-            <div class="max-w-3xl w-full mx-auto px-0 flex flex-col gap-8">
-                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
+            <div class="max-w-3xl mx-auto">
+                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
                     <h2 class="text-3xl font-bold gradient-text mb-8 flex items-center gap-3 pl-16 md:pl-0"><i class="fas fa-info-circle"></i>Kelola Tentang</h2>
                     <form method="post">
                         <div class="mb-4">
@@ -293,7 +293,7 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
                     </form>
                 </div>
                 <!-- Pendidikan -->
-                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
+                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
                     <h3 class="text-2xl font-bold gradient-text mb-6 flex items-center gap-3"><i class="fas fa-graduation-cap"></i>Pendidikan</h3>
                     <form method="post">
                         <div class="grid md:grid-cols-3 gap-4">
@@ -343,7 +343,7 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
                     </div>
                 </div>
                 <!-- Organisasi -->
-                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
+                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
                     <h3 class="text-2xl font-bold gradient-text mb-6 flex items-center gap-3"><i class="fas fa-users"></i>Organisasi</h3>
                     <form method="post">
                         <div class="grid md:grid-cols-3 gap-4">
@@ -393,7 +393,7 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
                     </div>
                 </div>
                 <!-- Aktivitas -->
-                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
+                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
                     <h3 class="text-2xl font-bold gradient-text mb-6 flex items-center gap-3"><i class="fas fa-running"></i>Aktivitas</h3>
                     <form method="post">
                         <div class="grid md:grid-cols-2 gap-4">

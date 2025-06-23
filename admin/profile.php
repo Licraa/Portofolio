@@ -60,6 +60,7 @@ if (isset($_GET['use_profile']) && is_numeric($_GET['use_profile'])) {
     header("Location: profile.php");
     exit;
 }
+
 // --- Fetch Profile Data ---
 $profileData = [
     'full_name' => '',
@@ -287,11 +288,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
         <!-- Overlay (mobile only) -->
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity duration-300"></div>
         <!-- Sidebar -->
-        <aside id="sidebar" class="w-72 glass-morphism border-r border-border-color flex flex-col py-8 px-6 fixed md:sticky top-0 h-full md:h-screen z-40 sidebar-scroll overflow-y-auto -left-80 md:left-0 transition-all duration-300">
+        <aside id="sidebar" class="max-w-xs sm:max-w-sm md:w-72 w-full glass-morphism border-r border-border-color flex flex-col justify-between py-4 px-2 sm:py-6 sm:px-4 fixed md:sticky top-0 h-screen z-40 sidebar-scroll overflow-hidden -left-80 md:left-0 transition-all duration-300">
             <!-- Logo Section -->
             <div class="flex items-center gap-4 mb-12">
                 <div class="relative">
-                    <div class="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center shadow-2xl">
+                    <div class="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center shadow-2xl status-indicator">
                         <i class="fas fa-crown text-white text-xl"></i>
                     </div>
                 </div>
@@ -333,7 +334,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
                 </a>
             </nav>
             <!-- User Profile Card -->
-            <div class="mt-8 p-6 glass-card rounded-2xl">
+            <div class="mt-8 p-6 ">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center">
                         <i class="fas fa-user text-white"></i>
@@ -351,14 +352,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
                 </form>
             </div>
         </aside>
+        <!-- Hamburger (mobile only) -->
+        <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
+            <span class="sr-only">Buka navigasi</span>
+            <i class="fas fa-bars text-2xl text-white"></i>
+        </button>
         <main class="flex-1 p-4 sm:p-8 md:p-12 bg-dark-bg min-h-screen overflow-x-auto">
-            <!-- Hamburger (mobile only) -->
-            <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
-                <span class="sr-only">Buka navigasi</span>
-                <i class="fas fa-bars text-2xl text-white"></i>
-            </button>
             <div class="max-w-3xl w-full mx-auto px-0 flex flex-col gap-8">
-                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
+                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
                     <h2 class="text-3xl font-bold gradient-text mb-8 flex items-center gap-3 pl-16 md:pl-0"><i class="fas fa-user"></i>Kelola Profil</h2>
                     <div class="grid md:grid-cols-2 gap-8">
                         <!-- Profile Picture -->

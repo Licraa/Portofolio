@@ -166,11 +166,11 @@ if (isset($_GET['delete_article']) && is_numeric($_GET['delete_article'])) {
         <!-- Overlay (mobile only) -->
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity duration-300"></div>
         <!-- Sidebar -->
-        <aside id="sidebar" class="w-72 md:w-80 bg-dark-surface glass-morphism border-r border-border-color flex flex-col py-8 px-6 fixed md:sticky top-0 h-full md:h-screen z-40 sidebar-scroll overflow-y-auto -left-80 md:left-0 transition-all duration-300">
+        <aside id="sidebar" class="max-w-xs sm:max-w-sm md:w-72 w-full glass-morphism border-r border-border-color flex flex-col justify-between py-4 px-2 sm:py-6 sm:px-4 fixed md:sticky top-0 h-screen z-40 sidebar-scroll overflow-hidden -left-80 md:left-0 transition-all duration-300">
             <!-- Logo Section -->
             <div class="flex items-center gap-4 mb-12">
                 <div class="relative">
-                    <div class="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center shadow-2xl">
+                    <div class="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center shadow-2xl status-indicator">
                         <i class="fas fa-crown text-white text-xl"></i>
                     </div>
                 </div>
@@ -212,7 +212,7 @@ if (isset($_GET['delete_article']) && is_numeric($_GET['delete_article'])) {
                 </a>
             </nav>
             <!-- User Profile Card -->
-            <div class="mt-8 p-6 glass-card rounded-2xl">
+            <div class="mt-8 p-6">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center">
                         <i class="fas fa-user text-white"></i>
@@ -231,7 +231,7 @@ if (isset($_GET['delete_article']) && is_numeric($_GET['delete_article'])) {
             </div>
         </aside>
         <!-- Main Content -->
-        <main class="flex-1 p-4 sm:p-8 md:p-12 bg-dark-bg min-h-screen overflow-x-auto">
+        <main class="flex-1 p-2 sm:p-4 md:p-8 bg-dark-bg min-h-screen overflow-x-hidden">
             <!-- Hamburger (mobile only) -->
             <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
                 <span class="sr-only">Buka navigasi</span>

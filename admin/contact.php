@@ -247,12 +247,12 @@ if ($socialQ && $socialQ->num_rows > 0) {
         <!-- Overlay (mobile only) -->
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity duration-300"></div>
         <!-- Sidebar -->
-        <aside id="sidebar" class="w-72 md:w-80 bg-dark-surface glass-morphism border-r border-border-color flex flex-col py-8 px-6 fixed md:sticky top-0 h-full md:h-screen z-40 sidebar-scroll overflow-y-auto -left-80 md:left-0 transition-all duration-300">
+        <aside id="sidebar" class="max-w-xs sm:max-w-sm md:w-72 w-full glass-morphism border-r border-border-color flex flex-col justify-between py-4 px-2 sm:py-6 sm:px-4 fixed md:sticky top-0 h-screen z-40 sidebar-scroll overflow-hidden -left-80 md:left-0 transition-all duration-300">
             <!-- Logo Section -->
             <div class="flex items-center gap-4 mb-12">
                 <div class="relative">
-                    <div class="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center shadow-2xl">
-                        <img src="../images/Logo.png" alt="Logo" class="w-8 h-8 rounded-lg">
+                    <div class="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center shadow-2xl status-indicator">
+                        <i class="fas fa-crown text-white text-xl"></i>
                     </div>
                 </div>
                 <div>
@@ -293,29 +293,40 @@ if ($socialQ && $socialQ->num_rows > 0) {
                 </a>
             </nav>
             <!-- User Profile Card -->
-            <div class="mt-8 p-6 glass-card rounded-2xl">
+            <div class="mt-8 p-6">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center">
-                        <i class="fas fa-user text-white text-xl"></i>
+                        <i class="fas fa-user text-white"></i>
                     </div>
                     <div>
-                        <span class="font-semibold text-lg text-text-primary">Admin</span>
+                        <p class="font-semibold text-sm">Admin User</p>
+                        <p class="text-text-secondary text-xs">administrator</p>
                     </div>
                 </div>
                 <form method="post" action="logout.php">
                     <button type="submit" class="w-full bg-gradient-to-r from-accent-danger to-red-600 text-white py-3 rounded-xl font-semibold hover:shadow-2xl transition-all duration-300 flex items-center gap-3 justify-center group">
-                        <i class="fas fa-sign-out-alt"></i> Keluar
+                        <i class="fas fa-sign-out-alt group-hover:translate-x-1 transition-transform duration-300"></i>
+                        <span>Keluar</span>
                     </button>
                 </form>
             </div>
         </aside>
-        <!-- Main Content -->
+        <!-- Hamburger (mobile only) -->
+        <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
+            <span class="sr-only">Buka navigasi</span>
+            <i class="fas fa-bars text-2xl text-white"></i>
+        </button>
         <main class="flex-1 p-4 sm:p-8 md:p-12 bg-dark-bg min-h-screen overflow-x-auto">
-            <!-- Hamburger (mobile only) -->
-            <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
-                <span class="sr-only">Buka navigasi</span>
-                <i class="fas fa-bars text-2xl text-white"></i>
-            </button>
+            <!-- Pesan Notifikasi -->
+            <?php if (isset($notif)): ?>
+                <div class="fixed top-4 right-4 z-50 w-full max-w-xs mx-auto">
+                    <div class="p-4 rounded-xl <?php echo $notif['type'] === 'success' ? 'notif-success' : 'notif-danger'; ?> shadow-md flex items-center gap-3">
+                        <i class="fas fa-info-circle"></i>
+                        <span><?php echo htmlspecialchars($notif['msg']); ?></span>
+                    </div>
+                </div>
+            <?php endif; ?>
+
             <div class="max-w-4xl w-full mx-auto px-0 flex flex-col gap-8">
                 <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
                     <h2 class="text-3xl font-bold gradient-text mb-8 flex items-center gap-3 pl-16 md:pl-0"><i class="fas fa-address-book text-accent-primary"></i>Kelola Kontak & Sosial Media</h2>
@@ -345,12 +356,6 @@ if ($socialQ && $socialQ->num_rows > 0) {
                             </button>
                         </div>
                     </form>
-                    <?php if (isset($notif)): ?>
-                        <div class="mt-4 p-4 rounded-xl <?php echo $notif['type'] === 'success' ? 'notif-success' : 'notif-danger'; ?> shadow-md flex items-center gap-3">
-                            <i class="fas fa-info-circle"></i>
-                            <span><?php echo htmlspecialchars($notif['msg']); ?></span>
-                        </div>
-                    <?php endif; ?>
                 </div>
 
                 <!-- Form Sosial Media -->
