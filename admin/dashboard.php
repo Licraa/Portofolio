@@ -1,3 +1,59 @@
+<?php
+include 'db.php'; // Include database connection
+
+// Statistik dashboard
+$profileCount = 0;
+$skillsCount = 0;
+$projectsCount = 0;
+$articlesCount = 0;
+$contactsCount = 0;
+$messagesCount = 0;
+
+// Ambil jumlah data profil (diasumsikan hanya 1 baris di tabel profile)
+$res = $conn->query("SELECT COUNT(*) as cnt FROM profile");
+if ($res) {
+    $row = $res->fetch_assoc();
+    $profileCount = (int)$row['cnt'];
+}
+
+// Ambil jumlah skills
+$res = $conn->query("SELECT COUNT(*) as cnt FROM skills");
+if ($res) {
+    $row = $res->fetch_assoc();
+    $skillsCount = (int)$row['cnt'];
+}
+
+// Ambil jumlah proyek
+$res = $conn->query("SELECT COUNT(*) as cnt FROM projects");
+if ($res) {
+    $row = $res->fetch_assoc();
+    $projectsCount = (int)$row['cnt'];
+}
+
+// Ambil jumlah artikel
+$res = $conn->query("SELECT COUNT(*) as cnt FROM articles");
+if ($res) {
+    $row = $res->fetch_assoc();
+    $articlesCount = (int)$row['cnt'];
+}
+
+// Ambil jumlah kontak aktif (diasumsikan hanya 1 baris di tabel contact)
+$res = $conn->query("SELECT COUNT(*) as cnt FROM contact");
+if ($res) {
+    $row = $res->fetch_assoc();
+    $contactsCount = (int)$row['cnt'];
+}
+
+// Ambil jumlah pesan masuk (tanpa filter is_read)
+if ($conn->query("SHOW TABLES LIKE 'contact_messages'")->num_rows > 0) {
+    $res = $conn->query("SELECT COUNT(*) as cnt FROM contact_messages");
+    if ($res) {
+        $row = $res->fetch_assoc();
+        $messagesCount = (int)$row['cnt'];
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 
@@ -273,13 +329,7 @@
 
                 <a href="contact.php" class="nav-item flex items-center gap-4 px-6 py-4 rounded-2xl font-semibold transition-all duration-300 hover:bg-accent-primary/10 hover:text-accent-primary text-text-secondary">
                     <i class="fas fa-phone text-lg w-5"></i>
-                    <span>Kontak</span>
-                </a>
-
-                <a href="message.php" class="nav-item flex items-center gap-4 px-6 py-4 rounded-2xl font-semibold transition-all duration-300 hover:bg-accent-primary/10 hover:text-accent-primary text-text-secondary">
-                    <i class="fas fa-comments text-lg w-5"></i>
-                    <span>Pesan Masuk</span>
-                    <span class="ml-auto bg-accent-danger text-xs px-2 py-1 rounded-full animate-bounce-subtle">3</span>
+                    <span>Kontak & Pesan</span>
                 </a>
             </nav>
 
@@ -329,8 +379,8 @@
                             <i class="fas fa-user text-2xl"></i>
                         </div>
                         <h3 class="text-2xl font-bold mb-3 text-text-primary">Profil</h3>
-                        <p class="text-4xl font-black text-accent-primary mb-4">85%</p>
-                        <p class="text-text-secondary mb-6">Data profil lengkap</p>
+                        <p class="text-4xl font-black text-accent-primary mb-4"></p>
+                        <p class="text-text-secondary mb-6">Data profil </p>
                         <a href="profile.php" class="inline-flex items-center gap-2 text-accent-primary hover:text-accent-secondary font-semibold transition-colors group">
                             <span>Kelola Profil</span>
                             <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform duration-300"></i>
@@ -346,7 +396,7 @@
                             <i class="fas fa-bolt text-2xl"></i>
                         </div>
                         <h3 class="text-2xl font-bold mb-3 text-text-primary">Keahlian</h3>
-                        <p class="text-4xl font-black text-accent-success mb-4">12+</p>
+                        <p class="text-4xl font-black text-accent-success mb-4"><?php echo $skillsCount; ?>+</p>
                         <p class="text-text-secondary mb-6">Skill terdaftar</p>
                         <a href="skills.php" class="inline-flex items-center gap-2 text-accent-success hover:text-green-400 font-semibold transition-colors group">
                             <span>Kelola Keahlian</span>
@@ -363,7 +413,7 @@
                             <i class="fas fa-rocket text-2xl"></i>
                         </div>
                         <h3 class="text-2xl font-bold mb-3 text-text-primary">Proyek</h3>
-                        <p class="text-4xl font-black text-accent-warning mb-4">8</p>
+                        <p class="text-4xl font-black text-accent-warning mb-4"><?php echo $projectsCount; ?></p>
                         <p class="text-text-secondary mb-6">Proyek selesai</p>
                         <a href="project.php" class="inline-flex items-center gap-2 text-accent-warning hover:text-yellow-400 font-semibold transition-colors group">
                             <span>Kelola Proyek</span>
@@ -380,7 +430,7 @@
                             <i class="fas fa-edit text-2xl"></i>
                         </div>
                         <h3 class="text-2xl font-bold mb-3 text-text-primary">Artikel</h3>
-                        <p class="text-4xl font-black text-accent-primary mb-4">24</p>
+                        <p class="text-4xl font-black text-accent-primary mb-4"><?php echo $articlesCount; ?></p>
                         <p class="text-text-secondary mb-6">Artikel terpublikasi</p>
                         <a href="articles.php" class="inline-flex items-center gap-2 text-accent-primary hover:text-accent-secondary font-semibold transition-colors group">
                             <span>Kelola Artikel</span>
@@ -397,7 +447,7 @@
                             <i class="fas fa-phone text-2xl"></i>
                         </div>
                         <h3 class="text-2xl font-bold mb-3 text-text-primary">Kontak</h3>
-                        <p class="text-4xl font-black text-accent-success mb-4">1</p>
+                        <p class="text-4xl font-black text-accent-success mb-4"><?php echo $contactsCount; ?></p>
                         <p class="text-text-secondary mb-6">Data kontak aktif</p>
                         <a href="contact.php" class="inline-flex items-center gap-2 text-accent-success hover:text-green-400 font-semibold transition-colors group">
                             <span>Kelola Kontak</span>
@@ -414,7 +464,7 @@
                             <i class="fas fa-comments text-2xl"></i>
                         </div>
                         <h3 class="text-2xl font-bold mb-3 text-text-primary">Pesan Masuk</h3>
-                        <p class="text-4xl font-black text-accent-danger mb-4">3</p>
+                        <p class="text-4xl font-black text-accent-danger mb-4"><?php echo $messagesCount; ?></p>
                         <p class="text-text-secondary mb-6">Pesan belum dibaca</p>
                         <a href="message.php" class="inline-flex items-center gap-2 text-accent-danger hover:text-red-400 font-semibold transition-colors group">
                             <span>Kelola Pesan</span>
@@ -423,144 +473,9 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Statistics & Management Section -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- Portfolio Statistics -->
-                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color">
-                    <div class="flex items-center gap-4 mb-8">
-                        <div class="gradient-primary rounded-2xl p-3">
-                            <i class="fas fa-chart-line text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-2xl font-bold gradient-text">Statistik Portfolio</h2>
-                            <p class="text-text-secondary">Overview data terkini</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-6">
-                        <div class="flex items-center justify-between p-4 bg-dark-surface/50 rounded-2xl border border-border-color/50">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-accent-primary/20 rounded-xl flex items-center justify-center">
-                                    <i class="fas fa-edit text-accent-primary"></i>
-                                </div>
-                                <div>
-                                    <p class="font-semibold">Artikel</p>
-                                    <p class="text-text-secondary text-sm">Published articles</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-2xl font-bold text-accent-primary">24</p>
-                                <p class="text-xs text-accent-success">+3 bulan ini</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between p-4 bg-dark-surface/50 rounded-2xl border border-border-color/50">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-accent-success/20 rounded-xl flex items-center justify-center">
-                                    <i class="fas fa-bolt text-accent-success"></i>
-                                </div>
-                                <div>
-                                    <p class="font-semibold">Skills</p>
-                                    <p class="text-text-secondary text-sm">Technical skills</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-2xl font-bold text-accent-success">15</p>
-                                <p class="text-xs text-accent-success">+2 baru</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between p-4 bg-dark-surface/50 rounded-2xl border border-border-color/50">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-accent-warning/20 rounded-xl flex items-center justify-center">
-                                    <i class="fas fa-rocket text-accent-warning"></i>
-                                </div>
-                                <div>
-                                    <p class="font-semibold">Proyek</p>
-                                    <p class="text-text-secondary text-sm">Completed projects</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-2xl font-bold text-accent-warning">8</p>
-                                <p class="text-xs text-accent-success">100% selesai</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between p-4 bg-dark-surface/50 rounded-2xl border border-border-color/50">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-accent-danger/20 rounded-xl flex items-center justify-center">
-                                    <i class="fas fa-comments text-accent-danger"></i>
-                                </div>
-                                <div>
-                                    <p class="font-semibold">Pesan Masuk</p>
-                                    <p class="text-text-secondary text-sm">Contact messages</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-2xl font-bold text-accent-danger">3</p>
-                                <p class="text-xs text-accent-warning">Perlu respon</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Management Tips -->
-                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color">
-                    <div class="flex items-center gap-4 mb-8">
-                        <div class="gradient-success rounded-2xl p-3">
-                            <i class="fas fa-lightbulb text-white text-xl"></i>
-                        </div>
-                        <div>
-                            <h2 class="text-2xl font-bold gradient-text">Tips Pengelolaan</h2>
-                            <p class="text-text-secondary">Panduan untuk sukses</p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="p-4 bg-gradient-to-r from-accent-primary/10 to-transparent rounded-2xl border-l-4 border-accent-primary">
-                            <div class="flex items-start gap-3">
-                                <i class="fas fa-user-tie text-accent-primary mt-1"></i>
-                                <div>
-                                    <h4 class="font-semibold mb-1">Profil Profesional</h4>
-                                    <p class="text-text-secondary text-sm">Lengkapi data profil untuk memberikan kesan profesional kepada visitor.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 bg-gradient-to-r from-accent-success/10 to-transparent rounded-2xl border-l-4 border-accent-success">
-                            <div class="flex items-start gap-3">
-                                <i class="fas fa-sync-alt text-accent-success mt-1"></i>
-                                <div>
-                                    <h4 class="font-semibold mb-1">Update Berkala</h4>
-                                    <p class="text-text-secondary text-sm">Tambahkan skill dan proyek terbaru secara rutin untuk menunjukkan perkembangan.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 bg-gradient-to-r from-accent-warning/10 to-transparent rounded-2xl border-l-4 border-accent-warning">
-                            <div class="flex items-start gap-3">
-                                <i class="fas fa-pen-fancy text-accent-warning mt-1"></i>
-                                <div>
-                                    <h4 class="font-semibold mb-1">Content Marketing</h4>
-                                    <p class="text-text-secondary text-sm">Tulis artikel berkualitas untuk membangun personal branding dan expertise.</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 bg-gradient-to-r from-accent-danger/10 to-transparent rounded-2xl border-l-4 border-accent-danger">
-                            <div class="flex items-start gap-3">
-                                <i class="fas fa-reply text-accent-danger mt-1"></i>
-                                <div>
-                                    <h4 class="font-semibold mb-1">Responsif Communication</h4>
-                                    <p class="text-text-secondary text-sm">Respon pesan masuk dengan cepat untuk membuka peluang kolaborasi.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
+    </div>
+    </div>
+    </main>
     </div>
 </body>
 
