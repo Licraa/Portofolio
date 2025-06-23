@@ -70,6 +70,8 @@ if ($activityResult && $activityResult->num_rows > 0) {
         $activities[] = $row;
     }
 }
+
+
 ?>
 
 <!DOCTYPE html>
@@ -78,7 +80,7 @@ if ($activityResult && $activityResult->num_rows > 0) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Profesional</title>
+    <title>Portfolio Raja AryansahPutra</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -335,24 +337,32 @@ if ($activityResult && $activityResult->num_rows > 0) {
                         </div>
                     </div>
                 </div>
-                <div class="container mx-auto px-6">
-                    <h2 class="text-3xl md:text-4xl font-bold text-center mb-8 text-warm-wood">Aktivitas Terbaru</h2>
+                <!-- aktivitas -->
+                <div class="container mx-auto px-6 py-10">
+                    <h2 class="text-3xl md:text-4xl font-bold text-center mb-10 text-warm-wood">Aktivitas Terbaru</h2>
                     <div class="max-w-4xl mx-auto">
                         <?php if (count($activities) > 0): ?>
                             <div class="grid md:grid-cols-2 gap-6">
                                 <?php foreach ($activities as $act): ?>
-                                    <div class="glass-effect p-6 rounded-xl border border-warm-wood shadow-lg animate-fade-in flex items-start space-x-4">
-                                        <span class="w-3 h-3 mt-2 bg-accent-green rounded-full flex-shrink-0"></span>
+                                    <div class="glass-effect p-6 rounded-xl border border-warm-wood/30 shadow-lg hover:shadow-xl transition-shadow duration-300 flex items-start space-x-4 group">
+                                        <!-- Dot Indicator -->
+                                        <span class="w-3 h-3 mt-2 bg-accent-green rounded-full flex-shrink-0 transition-transform duration-300 group-hover:scale-125"></span>
+
+                                        <!-- Activity Content -->
                                         <div>
-                                            <p class="text-light-surface font-semibold mb-1"><?php echo htmlspecialchars($act['name']); ?></p>
-                                            <span class="text-gray-400 text-sm"><?php echo htmlspecialchars($act['description']); ?></span>
+                                            <p class="text-light-surface font-semibold text-lg mb-1 transition-colors duration-300 group-hover:text-accent-green">
+                                                <?php echo htmlspecialchars($act['name']); ?>
+                                            </p>
+                                            <span class="text-gray-400 text-sm line-clamp-2">
+                                                <?php echo htmlspecialchars($act['description']); ?>
+                                            </span>
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
                             </div>
                         <?php else: ?>
-                            <div class="glass-effect p-10 rounded-2xl shadow-lg animate-fade-in text-center border border-warm-wood">
-                                <span class="text-gray-400">Belum ada data aktivitas.</span>
+                            <div class="glass-effect p-8 rounded-2xl shadow-inner text-center border border-warm-wood/20 animate-fade-in">
+                                <p class="text-gray-400 italic">Belum ada data aktivitas.</p>
                             </div>
                         <?php endif; ?>
                     </div>
@@ -422,93 +432,261 @@ if ($activityResult && $activityResult->num_rows > 0) {
     <!-- Projects Section Dinamis -->
     <section id="projects" class="py-20 bg-gradient-to-b from-dark-bg to-accent-green/10">
         <div class="container mx-auto px-6">
-            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 text-warm-wood">Proyek Terbaru</h2>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                <?php if (count($projects) > 0): foreach ($projects as $project): ?>
-                        <div class="glass-effect rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group">
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-16">
+                <div class="w-full flex justify-center">
+                    <h2 class="text-4xl md:text-5xl font-bold text-warm-wood mb-4 sm:mb-0 text-center">Proyek Terbaru</h2>
+                </div>
+            </div>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <?php if (count($projects) > 0):
+                // Tampilkan hanya 3 proyek terbaru untuk halaman index
+                $displayProjects = array_slice($projects, 0, 3);
+                foreach ($displayProjects as $project): ?>
+                    <div class="glass-effect rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group">
+                        <?php if (!empty($project['image'])): ?>
+                            <div class="flex justify-center mb-6">
+                                <img src="<?php echo htmlspecialchars($project['image']); ?>"
+                                    alt="<?php echo htmlspecialchars($project['title']); ?>"
+                                    class="w-full h-40 object-contain rounded-lg shadow border-2 border-warm-wood transition-transform duration-300 group-hover:scale-105 bg-glass" />
+                            </div>
+                        <?php endif; ?>
+                        <h3 class="text-xl font-bold mb-3 text-light-surface"><?php echo htmlspecialchars($project['title']); ?></h3>
+                        <p class="text-gray-300 mb-4 text-justify"><?php echo htmlspecialchars($project['description']); ?></p>
+                        <div class="flex flex-wrap gap-2">
+                            <?php foreach (explode(',', $project['technologies']) as $tech): ?>
+                                <span class="bg-dark-bg px-3 py-1 rounded-full text-xs"><?php echo htmlspecialchars(trim($tech)); ?></span>
+                            <?php endforeach; ?>
+                        </div>
+                        <div class="mt-4 flex gap-2">
+                            <?php if (!empty($project['github'])): ?>
+                                <a href="<?php echo htmlspecialchars($project['github']); ?>" target="_blank" class="text-warm-wood underline hover:text-accent-green transition-colors">Github</a>
+                            <?php endif; ?>
+                            <?php if (!empty($project['demo'])): ?>
+                                <a href="<?php echo htmlspecialchars($project['demo']); ?>" target="_blank" class="text-warm-wood underline hover:text-accent-green transition-colors">Demo</a>
+                            <?php endif; ?>
+                        </div>
+
+                    </div>
+                <?php endforeach;
+            else: ?>
+                <div class="text-gray-400 text-center w-full col-span-full">Belum ada data proyek.</div>
+            <?php endif; ?>
+        </div>
+        <?php if (count($projects) > 3): ?>
+            <div class="w-full flex justify-center mt-8">
+                <button
+                    onclick="openProjectsModal()"
+                    class="bg-light-surface/20 backdrop-blur-sm border border-light-surface/30 text-light-surface transition-all duration-300 text-sm font-medium py-2 px-6 rounded-full shadow-md hover:shadow-lg transform hover:-translate-y-0.5 cursor-pointer">
+                    Lihat Semua (<?php echo count($projects); ?>)
+                </button>
+            </div>
+        <?php endif; ?>
+        </div>
+    </section>
+
+    <!-- Modal All Projects -->
+    <div id="projectsModal" class="fixed inset-0 z-50 hidden overflow-y-auto transition-all duration-300">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <!-- Background Overlay -->
+            <div class="fixed inset-0 bg-dark-bg/80 backdrop-blur-sm transition-opacity" onclick="closeProjectsModal()"></div>
+
+            <!-- Modal Content -->
+            <div class="inline-block w-full max-w-6xl p-6 my-8 overflow-hidden align-middle transition-all transform rounded-3xl shadow-2xl border-2 border-warm-wood bg-dark-bg/95 backdrop-blur-md animate-fade-in"
+                style="animation: fadeInModal 0.5s cubic-bezier(.4,0,.2,1)">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-6 border-b border-warm-wood/40 pb-3">
+                    <h3 class="text-2xl sm:text-3xl font-bold text-warm-wood">Semua Proyek</h3>
+                    <button onclick="closeProjectsModal()" class="p-1 text-gray-400 hover:text-accent-green transition-colors duration-300 focus:outline-none rounded-full hover:bg-dark-bg/50">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+                    <?php foreach ($projects as $index => $project): ?>
+                        <div class="glass-effect rounded-2xl p-6 border-2 border-warm-wood/60 shadow-lg hover:shadow-2xl hover:scale-[1.03] transition-all duration-300 group animate-fade-in"
+                            style="animation-delay: <?php echo ($index * 0.06); ?>s; animation-fill-mode: both;">
+                            <!-- Image -->
                             <?php if (!empty($project['image'])): ?>
-                                <div class="flex justify-center mb-6">
+                                <div class="mb-4 aspect-video rounded-lg overflow-hidden border border-warm-wood/30 group-hover:shadow-inner transition-shadow bg-dark-bg/40">
                                     <img src="<?php echo htmlspecialchars($project['image']); ?>"
                                         alt="<?php echo htmlspecialchars($project['title']); ?>"
-                                        class="w-full h-40 object-contain rounded-lg shadow border-2 border-warm-wood transition-transform duration-300 group-hover:scale-105 bg-glass" />
+                                        class="w-full h-40 object-contain rounded-lg transition-transform duration-300 group-hover:scale-105" />
                                 </div>
                             <?php endif; ?>
-                            <h3 class="text-xl font-bold mb-3 text-light-surface"><?php echo htmlspecialchars($project['title']); ?></h3>
-                            <p class="text-gray-300 mb-4 text-justify"><?php echo htmlspecialchars($project['description']); ?></p>
-                            <div class="flex flex-wrap gap-2">
-                                <?php foreach (explode(',', $project['technologies']) as $tech): ?>
-                                    <span class="bg-dark-bg px-3 py-1 rounded-full text-xs"><?php echo htmlspecialchars(trim($tech)); ?></span>
+
+                            <!-- Title -->
+                            <h4 class="text-xl font-semibold mb-2 text-light-surface truncate">
+                                <?php echo htmlspecialchars($project['title']); ?>
+                            </h4>
+
+                            <!-- Description -->
+                            <p class="text-gray-300 text-sm mb-4 line-clamp-3">
+                                <?php echo htmlspecialchars($project['description']); ?>
+                            </p>
+
+                            <!-- Tags -->
+                            <div class="flex flex-wrap gap-1.5 mb-5">
+                                <?php foreach (array_slice(explode(',', $project['technologies']), 0, 3) as $tech): ?>
+                                    <span class="px-2 py-1 text-xs rounded-full bg-dark-bg border border-warm-wood/40 text-light-surface">
+                                        <?php echo htmlspecialchars(trim($tech)); ?>
+                                    </span>
                                 <?php endforeach; ?>
                             </div>
-                            <div class="mt-4 flex gap-2">
+
+                            <!-- Buttons -->
+                            <div class="flex gap-2 mt-auto">
                                 <?php if (!empty($project['github'])): ?>
-                                    <a href="<?php echo htmlspecialchars($project['github']); ?>" target="_blank" class="text-warm-wood underline">Github</a>
+                                    <a href="<?php echo htmlspecialchars($project['github']); ?>" target="_blank"
+                                        class="flex-1 text-center bg-warm-wood text-dark-bg py-2 px-3 rounded text-sm font-medium hover:bg-accent-green hover:text-white transition-colors duration-300 shadow">
+                                        Github
+                                    </a>
                                 <?php endif; ?>
                                 <?php if (!empty($project['demo'])): ?>
-                                    <a href="<?php echo htmlspecialchars($project['demo']); ?>" target="_blank" class="text-warm-wood underline">Demo</a>
+                                    <a href="<?php echo htmlspecialchars($project['demo']); ?>" target="_blank"
+                                        class="flex-1 text-center bg-accent-green text-dark-bg py-2 px-3 rounded text-sm font-medium hover:bg-warm-wood hover:text-white transition-colors duration-300 shadow">
+                                        Demo
+                                    </a>
                                 <?php endif; ?>
                             </div>
                         </div>
-                    <?php endforeach;
-                else: ?>
-                    <div class="text-gray-400 text-center w-full">Belum ada data proyek.</div>
-                <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </div>
-    </section>
+    </div>
+
 
     <!-- Article Section Dinamis -->
     <section id="articles" class="py-20 bg-gradient-to-b from-dark-bg to-accent-green/10">
         <div class="container mx-auto px-6">
-            <h2 class="text-4xl md:text-5xl font-bold text-center mb-16 text-warm-wood">Artikel</h2>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                <?php if (count($articles) > 0): foreach ($articles as $article): ?>
-                        <div class="glass-effect rounded-2xl p-6 flex flex-col h-full justify-between transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group">
-                            <?php if (!empty($article['image'])): ?>
-                                <div class="h-48 rounded-lg mb-6 relative overflow-hidden flex items-center justify-center">
-                                    <img src="<?php echo htmlspecialchars($article['image']); ?>" alt="<?php echo htmlspecialchars($article['title']); ?>" class="object-cover w-full h-full" />
-                                </div>
-                            <?php endif; ?>
-                            <div class="flex-1 flex flex-col">
-                                <h3 class="text-xl font-bold mb-3 text-light-surface"><?php echo htmlspecialchars($article['title']); ?></h3>
-                                <p class="text-gray-300 mb-4 flex-1"><?php echo htmlspecialchars($article['excerpt']); ?></p>
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span class="bg-dark-bg px-3 py-1 rounded-full text-xs"><?php echo date('d M Y', strtotime($article['publish_date'])); ?></span>
-                                </div>
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-16">
+                <div class="w-full flex justify-center">
+                    <h2 class="text-4xl md:text-5xl font-bold text-warm-wood mb-4 sm:mb-0 text-center">Artikel Terbaru</h2>
+                </div>
+            </div>
+        </div>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <?php if (count($articles) > 0):
+                // Tampilkan hanya 3 artikel terbaru untuk halaman index
+                $displayArticles = array_slice($articles, 0, 3);
+                foreach ($displayArticles as $article): ?>
+                    <div class="glass-effect rounded-2xl p-6 transform hover:scale-105 transition-all duration-300 hover:shadow-2xl group flex flex-col h-full">
+                        <?php if (!empty($article['image'])): ?>
+                            <div class="flex justify-center mb-6">
+                                <img src="<?php echo htmlspecialchars($article['image']); ?>"
+                                    alt="<?php echo htmlspecialchars($article['title']); ?>"
+                                    class="w-full h-40 object-cover rounded-lg shadow border-2 border-warm-wood transition-transform duration-300 group-hover:scale-105 bg-glass" />
                             </div>
-                            <div class="mt-auto">
-                                <a href="articles.php?id=<?php echo $article['id']; ?>" class="bg-warm-wood text-dark-bg px-4 py-2 rounded-lg font-medium flex items-center justify-center">Lihat Detail</a>
+                        <?php endif; ?>
+                        <h3 class="text-xl font-bold mb-3 text-light-surface"><?php echo htmlspecialchars($article['title']); ?></h3>
+                        <p class="text-gray-300 mb-4 text-justify flex-1"><?php echo htmlspecialchars($article['excerpt']); ?></p>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="bg-dark-bg px-3 py-1 rounded-full text-xs"><?php echo date('d M Y', strtotime($article['publish_date'])); ?></span>
+                        </div>
+                        <div class="mt-auto">
+                            <div class="flex items-end justify-between h-full">
+                                <a href="articles.php?id=<?php echo $article['id']; ?>"
+                                    class="flex items-center gap-2 bg-warm-wood text-dark-bg rounded-lg px-4 py-2 font-medium shadow hover:bg-accent-green hover:text-white transition-all duration-300 mt-4"
+                                    style="position: absolute; right: 1.25rem; bottom: 1.25rem;">
+                                    Lihat Detail
+                                    <span class="ml-2 text-lg"><i class="fas fa-arrow-right"></i></span>
+                                </a>
                             </div>
                         </div>
-                    <?php endforeach;
-                else: ?>
-                    <div class="text-gray-400 text-center w-full">Belum ada data artikel.</div>
-                <?php endif; ?>
-
+                    </div>
+                <?php endforeach;
+            else: ?>
+                <div class="text-gray-400 text-center w-full col-span-full">Belum ada data artikel.</div>
+            <?php endif; ?>
+        </div>
+        <?php if (count($articles) > 3): ?>
+            <div class="w-full flex justify-center mt-8">
+                <button
+                    onclick="openArticlesModal()"
+                    class="bg-light-surface/20 backdrop-blur-sm border border-light-surface/30 text-light-surface transition-all duration-300 text-sm font-medium py-2 px-6 rounded-full shadow-md hover:shadow-lg transform hover:-translate-y-0.5 cursor-pointer">
+                    Lihat Semua (<?php echo count($articles); ?>)
+                </button>
             </div>
+        <?php endif; ?>
         </div>
     </section>
 
+    <!-- Modal All Articles -->
+    <div id="articlesModal" class="fixed inset-0 z-50 hidden overflow-y-auto transition-all duration-300">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <!-- Background Overlay -->
+            <div class="fixed inset-0 bg-dark-bg/80 backdrop-blur-sm transition-opacity" onclick="closeArticlesModal()"></div>
+
+            <!-- Modal Content -->
+            <div class="inline-block w-full max-w-6xl p-6 my-8 overflow-hidden align-middle transition-all transform rounded-3xl shadow-2xl border-2 border-warm-wood bg-dark-bg/95 backdrop-blur-md animate-fade-in"
+                style="animation: fadeInModal 0.5s cubic-bezier(.4,0,.2,1)">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-6 border-b border-warm-wood/40 pb-3">
+                    <h3 class="text-2xl sm:text-3xl font-bold text-warm-wood">Semua Artikel</h3>
+                    <button onclick="closeArticlesModal()" class="p-1 text-gray-400 hover:text-accent-green transition-colors duration-300 focus:outline-none rounded-full hover:bg-dark-bg/50">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7">
+                    <?php foreach ($articles as $index => $article): ?>
+                        <div class="glass-effect rounded-2xl p-6 border-2 border-warm-wood/60 shadow-lg hover:shadow-2xl hover:scale-[1.03] transition-all duration-300 group animate-fade-in flex flex-col h-full"
+                            style="animation-delay: <?php echo ($index * 0.06); ?>s; animation-fill-mode: both;">
+                            <?php if (!empty($article['image'])): ?>
+                                <div class="mb-4 aspect-video rounded-lg overflow-hidden border border-warm-wood/30 group-hover:shadow-inner transition-shadow bg-dark-bg/40 flex items-center justify-center">
+                                    <img src="<?php echo htmlspecialchars($article['image']); ?>"
+                                        alt="<?php echo htmlspecialchars($article['title']); ?>"
+                                        class="w-full h-40 object-cover rounded-lg transition-transform duration-300 group-hover:scale-105" />
+                                </div>
+                            <?php endif; ?>
+                            <h4 class="text-xl font-semibold mb-2 text-light-surface truncate">
+                                <?php echo htmlspecialchars($article['title']); ?>
+                            </h4>
+                            <p class="text-gray-300 text-sm mb-4 line-clamp-3 flex-1">
+                                <?php echo htmlspecialchars($article['excerpt']); ?>
+                            </p>
+                            <div class="flex flex-wrap gap-1.5 mb-5">
+                                <span class="px-2 py-1 text-xs rounded-full bg-dark-bg border border-warm-wood/40 text-light-surface">
+                                    <?php echo date('d M Y', strtotime($article['publish_date'])); ?>
+                                </span>
+                            </div>
+                            <div class="mt-auto">
+                                <a href="articles.php?id=<?php echo $article['id']; ?>" class="flex-1 text-center bg-warm-wood rounded-lg text-dark-bg py-2 px-3 rounded text-sm font-medium hover:bg-accent-green hover:text-white transition-colors duration-300 shadow block">Lihat Detail</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Contact Section Sederhana -->
     <section id="contact" class="py-20 px-4 bg-dark-bg">
-        <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
-            <!-- Kiri: Info Kontak & Value per Bulan -->
-            <div class="mb-10 md:mb-0 glass-effect p-8 rounded-2xl shadow-lg">
+        <div class="max-w-3xl mx-auto flex flex-col items-center">
+            <!-- Tengah: Info Kontak & Value per Bulan -->
+            <div class="glass-effect p-8 rounded-2xl shadow-lg w-full mb-10">
                 <h2 class="text-3xl md:text-4xl font-bold mb-6 text-warm-wood text-center">Kontak Saya</h2>
                 <div class="space-y-4 mb-8">
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 ">
                         <span class="w-8 h-8 flex items-center justify-center bg-warm-wood rounded-full"><svg class="w-5 h-5 text-dark-bg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26c.67.36 1.45.36 2.12 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                             </svg></span>
                         <span class="text-light-surface text-lg"><?php echo htmlspecialchars($contact['email'] ?? '-'); ?></span>
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 ">
                         <span class="w-8 h-8 flex items-center justify-center bg-warm-wood rounded-full"><svg class="w-5 h-5 text-dark-bg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                             </svg></span>
                         <span class="text-light-surface text-lg"><?php echo htmlspecialchars($contact['phone'] ?? '-'); ?></span>
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-3 ">
                         <span class="w-8 h-8 flex items-center justify-center bg-warm-wood rounded-full"><svg class="w-5 h-5 text-dark-bg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -516,74 +694,104 @@ if ($activityResult && $activityResult->num_rows > 0) {
                         <span class="text-light-surface text-lg"><?php echo htmlspecialchars($contact['location'] ?? '-'); ?></span>
                     </div>
                 </div>
-                <div class="mb-8 glass-effect p-6 rounded-2xl shadow-lg">
+                <div class="mb-8 glass-effect p-6 rounded-2xl shadow-lg text-center">
                     <div class="text-warm-wood font-semibold text-lg mb-1">Value per Bulan</div>
                     <div class="text-2xl font-bold text-light-surface">Rp <?php echo number_format($profileData['value_per_month'] ?? 0, 0, ',', '.'); ?>,-</div>
                     <div class="text-xs text-gray-400 mt-1">*Harga rata-rata jasa/bisnis per bulan</div>
                 </div>
-                <div class="flex space-x-4 mt-6">
-                    <?php foreach ($socials as $soc): ?>
-                        <a href="<?php echo htmlspecialchars($soc['url']); ?>" class="text-gray-400 hover:text-warm-wood transition-colors duration-300 text-2xl" target="_blank">
-                            <i class="fab fa-<?php echo htmlspecialchars($soc['platform']); ?>"></i>
-                        </a>
-                    <?php endforeach; ?>
+                <div class="text-center mb-6">
+                    <p class="text-lg text-gray-300">Ingin berdiskusi lebih lanjut? Silakan kirim pesan melalui form di bawah ini.</p>
+                </div>
+                <div class="flex justify-center mt-8">
+                    <button onclick="openContactModal()" class="bg-warm-wood text-dark-bg px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg w-full md:w-auto">
+                        Kirim Pesan
+                    </button>
                 </div>
             </div>
-            <!-- Kanan: Form Kontak -->
-            <div>
-                <div class="glass-effect rounded-2xl p-8 md:p-10 shadow-lg">
-                    <form method="post" action="" class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium mb-2 text-light-surface">Nama</label>
-                            <input type="text" name="contact_name" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-light-surface focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300" required />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-2 text-light-surface">Email</label>
-                            <input type="email" name="contact_email" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-light-surface focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300" required />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium mb-2 text-light-surface">Pesan</label>
-                            <textarea name="contact_message" rows="5" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-light-surface focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300" required></textarea>
-                        </div>
-                        <div class="flex justify-center">
-                            <button type="submit" name="send_message" class="bg-warm-wood text-dark-bg px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg w-full md:w-auto">
-                                Kirim Pesan
-                            </button>
-                        </div>
-                    </form>
-                    <?php
-                    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
-                        $name = $conn->real_escape_string($_POST['contact_name']);
-                        $email = $conn->real_escape_string($_POST['contact_email']);
-                        $message = $conn->real_escape_string($_POST['contact_message']);
-                        $conn->query("INSERT INTO contact_messages (name, email, message, created_at) VALUES ('$name', '$email', '$message', NOW())");
-                    }
-                    ?>
-                </div>
-            </div>
+
         </div>
     </section>
+
+    <!-- Modal Contact Form -->
+    <div id="contactModal" class="fixed inset-0 z-50 hidden overflow-y-auto transition-all duration-300">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <!-- Background Overlay -->
+            <div class="fixed inset-0 bg-dark-bg/80 backdrop-blur-sm transition-opacity" onclick="closeContactModal()"></div>
+            <!-- Modal Content -->
+            <div class="inline-block w-full max-w-lg p-6 my-8 overflow-hidden align-middle transition-all transform rounded-3xl shadow-2xl border-2 border-warm-wood bg-dark-bg/95 backdrop-blur-md animate-fade-in relative"
+                style="animation: fadeInModal 0.5s cubic-bezier(.4,0,.2,1)">
+                <button onclick="closeContactModal()" class="absolute top-3 right-3 p-1 text-gray-400 hover:text-accent-green transition-colors duration-300 focus:outline-none rounded-full hover:bg-dark-bg/50">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+                <h2 class="text-2xl font-bold text-warm-wood mb-6 text-center">Kirim Pesan</h2>
+                <form method="post" action="#contact" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-light-surface">Nama</label>
+                        <input type="text" name="contact_name" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-light-surface focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300" required />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-light-surface">Email</label>
+                        <input type="email" name="contact_email" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-light-surface focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300" required />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-light-surface">Pesan</label>
+                        <textarea name="contact_message" rows="5" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-light-surface focus:outline-none focus:ring-2 focus:ring-warm-wood focus:border-transparent transition-all duration-300" required></textarea>
+                    </div>
+                    <div class="flex justify-center">
+                        <button type="submit" name="send_message" class="bg-warm-wood text-dark-bg px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg w-full md:w-auto">
+                            Kirim Pesan
+                        </button>
+                    </div>
+                </form>
+                <?php
+                if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_message'])) {
+                    $name = $conn->real_escape_string($_POST['contact_name']);
+                    $email = $conn->real_escape_string($_POST['contact_email']);
+                    $message = $conn->real_escape_string($_POST['contact_message']);
+                    $conn->query("INSERT INTO contact_messages (name, email, message, created_at) VALUES ('$name', '$email', '$message', NOW())");
+                    echo '<div class="mt-4 text-green-400 text-center">Pesan berhasil dikirim!</div>';
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome CDN for icons (if not already included) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
     <!-- Footer -->
     <footer class="bg-gradient-to-r from-dark-bg to-accent-green/20 py-8 border-t border-gray-700">
         <div class="container mx-auto px-6 text-center">
             <p class="text-gray-400 mb-4">© 2025 Portfolio. Raja aryansahPutra.</p>
             <div class="flex justify-center space-x-6">
-                <a href="#" class="text-gray-400 hover:text-warm-wood transition-colors duration-300">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
-                    </svg>
-                </a>
-                <a href="#" class="text-gray-400 hover:text-warm-wood transition-colors duration-300">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                    </svg>
-                </a>
-                <a href="#" class="text-gray-400 hover:text-warm-wood transition-colors duration-300">
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-                    </svg>
-                </a>
+                <?php
+                // Tampilkan icon sosial media dari $socials
+                foreach ($socials as $social):
+                    $icon = '';
+                    $url = $social['url'] ?? '#';
+                    $name = strtolower($social['platform'] ?? '');
+                    if (strpos($name, 'instagram') !== false) {
+                        $icon = '<i class="fab fa-instagram"></i>';
+                    } elseif (strpos($name, 'linkedin') !== false) {
+                        $icon = '<i class="fab fa-linkedin"></i>';
+                    } elseif (strpos($name, 'github') !== false) {
+                        $icon = '<i class="fab fa-github"></i>';
+                    } elseif (strpos($name, 'twitter') !== false || strpos($name, 'x.com') !== false) {
+                        $icon = '<i class="fab fa-x-twitter"></i>';
+                    } elseif (strpos($name, 'facebook') !== false) {
+                        $icon = '<i class="fab fa-facebook"></i>';
+                    } elseif (strpos($name, 'youtube') !== false) {
+                        $icon = '<i class="fab fa-youtube"></i>';
+                    } else {
+                        $icon = '<i class="fas fa-globe"></i>';
+                    }
+                ?>
+                    <a href="<?php echo htmlspecialchars($url); ?>" target="_blank" rel="noopener" class="text-gray-400 hover:text-warm-wood transition-colors duration-300 text-2xl">
+                        <?php echo $icon; ?>
+                    </a>
+                <?php endforeach; ?>
             </div>
         </div>
     </footer>
@@ -653,6 +861,113 @@ if ($activityResult && $activityResult->num_rows > 0) {
                 const speed = 0.2;
                 element.style.transform = `translateY(-${scrolled * speed}px)`;
             });
+        });
+    </script>
+    <script>
+        // JavaScript untuk Modal Projects
+        function openProjectsModal() {
+            const modal = document.getElementById('projectsModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
+
+            // Add animation
+            setTimeout(() => {
+                modal.classList.add('opacity-100');
+            }, 50);
+        }
+
+        function closeProjectsModal() {
+            const modal = document.getElementById('projectsModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Restore background scroll
+        }
+
+        // Close modal when clicking outside or pressing Escape
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('projectsModal');
+
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeProjectsModal();
+                }
+            });
+
+            // Prevent modal content click from closing modal
+            modal.querySelector('.inline-block').addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+        });
+    </script>
+
+    <script>
+        // JavaScript untuk Modal Articles
+        function openArticlesModal() {
+            const modal = document.getElementById('articlesModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent background scroll
+
+            // Add animation
+            setTimeout(() => {
+                modal.classList.add('opacity-100');
+            }, 50);
+        }
+
+        function closeArticlesModal() {
+            const modal = document.getElementById('articlesModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Restore background scroll
+        }
+
+        // Close modal when clicking outside or pressing Escape
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('articlesModal');
+
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeArticlesModal();
+                }
+            });
+
+            // Prevent modal content click from closing modal
+            if (modal.querySelector('.inline-block')) {
+                modal.querySelector('.inline-block').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
+    </script>
+
+    <script>
+        // Modal Contact
+        function openContactModal() {
+            const modal = document.getElementById('contactModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                modal.classList.add('opacity-100');
+            }, 50);
+        }
+
+        function closeContactModal() {
+            const modal = document.getElementById('contactModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        // Close modal on Escape key
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('contactModal');
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeContactModal();
+                }
+            });
+            if (modal.querySelector('.inline-block')) {
+                modal.querySelector('.inline-block').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
         });
     </script>
 </body>

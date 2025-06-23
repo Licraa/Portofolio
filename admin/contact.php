@@ -56,7 +56,43 @@ function js_escape($str)
 {
     return str_replace(["\\", "'", "\n", "\r"], ["\\\\", "\\'", "\\n", "\\r"], $str);
 }
+// --- Handle Add/Edit Social Media ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_social'])) {
+    $platform = $conn->real_escape_string($_POST['platform']);
+    $url = $conn->real_escape_string($_POST['url']);
+    $conn->query("INSERT INTO social_media (platform, url) VALUES ('$platform', '$url')");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Sosial media berhasil ditambah!'];
+    header("Location: contact.php");
+    exit;
+}
+// Handle edit sosial media
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_social'])) {
+    $id = intval($_POST['social_id']);
+    $platform = $conn->real_escape_string($_POST['platform']);
+    $url = $conn->real_escape_string($_POST['url']);
+    $conn->query("UPDATE social_media SET platform='$platform', url='$url' WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Sosial media berhasil diupdate!'];
+    header("Location: contact.php");
+    exit;
+}
+// Handle hapus sosial media
+if (isset($_GET['delete_social']) && is_numeric($_GET['delete_social'])) {
+    $id = intval($_GET['delete_social']);
+    $conn->query("DELETE FROM social_media WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Sosial media berhasil dihapus!'];
+    header("Location: contact.php");
+    exit;
+}
+// Ambil data sosial media
+$socials = [];
+$socialQ = $conn->query("SELECT * FROM social_media ORDER BY id DESC");
+if ($socialQ && $socialQ->num_rows > 0) {
+    while ($row = $socialQ->fetch_assoc()) {
+        $socials[] = $row;
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="id" class="scroll-smooth">
 
@@ -178,6 +214,31 @@ function js_escape($str)
             background: linear-gradient(90deg, #e74c3c 0%, #ff7675 100%);
             color: #fff;
         }
+
+        /* Animasi untuk modal */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 
@@ -199,7 +260,7 @@ function js_escape($str)
             </div>
             <!-- Navigation -->
             <nav class="flex-1 flex flex-col gap-2">
-                <a href="dashboard.php" class="nav-item flex items-center gap-4 px-6 py-4 rounded-2xl font-semibold transition-all duration-300 hover:bg-accent-primary/10 hover:text-accent-primary text-text-secondary">
+                <a href="index.php" class="nav-item flex items-center gap-4 px-6 py-4 rounded-2xl font-semibold transition-all duration-300 hover:bg-accent-primary/10 hover:text-accent-primary text-text-secondary">
                     <i class="fas fa-home text-lg w-5"></i>
                     <span>Dashboard</span>
                 </a>
@@ -287,6 +348,79 @@ function js_escape($str)
                         </div>
                     <?php endif; ?>
                 </div>
+
+                <!-- Form Sosial Media -->
+                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
+                    <h2 class="text-2xl font-bold gradient-text mb-6 flex items-center gap-3">
+                        <i class="fab fa-hashtag text-accent-primary"></i>
+                        Kelola Sosial Media
+                    </h2>
+
+                    <!-- Form Tambah Sosial Media -->
+                    <form method="post" class="mb-6 grid md:grid-cols-3 gap-4 items-end">
+                        <div>
+                            <label class="block text-sm font-medium mb-2">Platform</label>
+                            <input type="text" name="platform" class="w-full rounded-lg bg-dark-surface border border-border-color px-4 py-2 text-text-primary focus:ring-2 focus:ring-accent-primary" placeholder="Instagram, Github, LinkedIn..." required>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium mb-2">URL</label>
+                            <input type="url" name="url" class="w-full rounded-lg bg-dark-surface border border-border-color px-4 py-2 text-text-primary focus:ring-2 focus:ring-accent-primary" placeholder="https://..." required>
+                        </div>
+                        <div>
+                            <button type="submit" name="add_social" class="bg-gradient-to-r from-accent-primary to-blue-500 text-white px-6 py-2 rounded-xl font-semibold shadow-md hover:shadow-xl transition-all flex items-center gap-2 w-full"><i class="fas fa-plus"></i> Tambah</button>
+                        </div>
+                    </form>
+                    <!-- Daftar Sosial Media -->
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm text-left">
+                            <thead>
+                                <tr class="text-text-secondary border-b border-border-color">
+                                    <th class="py-3 px-4">Platform</th>
+                                    <th class="py-3 px-4">URL</th>
+                                    <th class="py-3 px-4">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (count($socials) > 0): foreach ($socials as $s): ?>
+                                        <tr class="border-b border-border-color hover:bg-dark-surface/50">
+                                            <td class="py-3 px-4 font-semibold text-text-primary flex items-center gap-2">
+                                                <?php
+                                                $icon = '<i class="fas fa-globe"></i>';
+                                                $name = strtolower($s['platform']);
+                                                if (strpos($name, 'instagram') !== false) {
+                                                    $icon = '<i class="fab fa-instagram text-pink-400"></i>';
+                                                } elseif (strpos($name, 'linkedin') !== false) {
+                                                    $icon = '<i class="fab fa-linkedin text-blue-400"></i>';
+                                                } elseif (strpos($name, 'github') !== false) {
+                                                    $icon = '<i class="fab fa-github text-gray-300"></i>';
+                                                } elseif (strpos($name, 'twitter') !== false || strpos($name, 'x.com') !== false) {
+                                                    $icon = '<i class="fab fa-x-twitter text-blue-400"></i>';
+                                                } elseif (strpos($name, 'facebook') !== false) {
+                                                    $icon = '<i class="fab fa-facebook text-blue-600"></i>';
+                                                } elseif (strpos($name, 'youtube') !== false) {
+                                                    $icon = '<i class="fab fa-youtube text-red-500"></i>';
+                                                }
+                                                echo $icon . ' ' . htmlspecialchars($s['platform']);
+                                                ?>
+                                            </td>
+                                            <td class="py-3 px-4 text-accent-primary"><a href="<?php echo htmlspecialchars($s['url']); ?>" target="_blank" class="underline hover:text-accent-success transition-colors"><?php echo htmlspecialchars($s['url']); ?></a></td>
+                                            <td class="py-3 px-4 flex gap-2">
+                                                <button type="button" class="text-accent-success hover:text-green-500 transition-colors" title="Edit" onclick="openEditSocialModal('<?php echo $s['id']; ?>', '<?php echo htmlspecialchars(addslashes($s['platform'])); ?>', '<?php echo htmlspecialchars(addslashes($s['url'])); ?>')">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <a href="?delete_social=<?php echo $s['id']; ?>" class="text-accent-danger hover:text-red-500 transition-colors" title="Hapus" onclick="return confirm('Hapus sosial media ini?')"><i class="fas fa-trash"></i></a>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach;
+                                else: ?>
+                                    <tr>
+                                        <td colspan="3" class="py-6 text-center text-text-secondary">Belum ada sosial media.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                 <!-- Pesan Masuk -->
                 <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8 mt-12">
                     <h2 class="text-2xl font-bold gradient-text mb-6 flex items-center gap-3">
@@ -334,8 +468,73 @@ function js_escape($str)
                     </div>
                 </div>
             </div>
+
         </main>
     </div>
+
+    <!-- Modal Edit Sosial Media -->
+    <div id="editSocialModal" class="fixed inset-0 z-50 hidden overflow-y-auto transition-all duration-300">
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <!-- Overlay -->
+            <div class="fixed inset-0 bg-dark-bg/80 backdrop-blur-sm transition-opacity" onclick="closeEditSocialModal()"></div>
+            <!-- Modal Content -->
+            <div class="inline-block w-full max-w-lg p-6 my-8 overflow-hidden align-middle transition-all transform rounded-3xl shadow-2xl border-2 border-accent-primary bg-dark-bg/95 backdrop-blur-md glass-card relative animate-fade-in">
+                <button onclick="closeEditSocialModal()" class="absolute top-3 right-3 p-1 text-gray-400 hover:text-accent-primary transition-colors duration-300 focus:outline-none rounded-full hover:bg-dark-bg/50">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+                <h2 class="text-2xl font-bold gradient-text mb-6 flex items-center gap-3 justify-center">
+                    <i class="fab fa-hashtag text-accent-primary"></i> Edit Sosial Media
+                </h2>
+                <form method="post" id="editSocialForm" class="grid gap-6">
+                    <input type="hidden" name="social_id" id="editSocialId">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Platform</label>
+                        <input type="text" name="platform" id="editPlatform" class="w-full rounded-lg bg-dark-surface border border-border-color px-4 py-2 text-text-primary focus:ring-2 focus:ring-accent-primary" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">URL</label>
+                        <input type="url" name="url" id="editUrl" class="w-full rounded-lg bg-dark-surface border border-border-color px-4 py-2 text-text-primary focus:ring-2 focus:ring-accent-primary" required>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="submit" name="edit_social" class="bg-gradient-to-r from-accent-primary to-blue-500 text-white px-6 py-2 rounded-xl font-semibold shadow-md hover:shadow-xl transition-all flex items-center gap-2">
+                            <i class="fas fa-save"></i> Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openEditSocialModal(id, platform, url) {
+            document.getElementById('editSocialId').value = id;
+            document.getElementById('editPlatform').value = platform;
+            document.getElementById('editUrl').value = url;
+            document.getElementById('editSocialModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                document.getElementById('editSocialModal').classList.add('opacity-100');
+            }, 50);
+        }
+
+        function closeEditSocialModal() {
+            document.getElementById('editSocialModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('editSocialModal');
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    closeEditSocialModal();
+                }
+            });
+            if (modal.querySelector('.inline-block')) {
+                modal.querySelector('.inline-block').addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

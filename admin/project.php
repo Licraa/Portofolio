@@ -211,7 +211,7 @@ if (isset($_GET['delete_project']) && is_numeric($_GET['delete_project'])) {
             </div>
             <!-- Navigation -->
             <nav class="flex-1 flex flex-col gap-2">
-                <a href="dashboard.php" class="nav-item flex items-center gap-4 px-6 py-4 rounded-2xl font-semibold transition-all duration-300 hover:bg-accent-primary/10 hover:text-accent-primary text-text-secondary">
+                <a href="index.php" class="nav-item flex items-center gap-4 px-6 py-4 rounded-2xl font-semibold transition-all duration-300 hover:bg-accent-primary/10 hover:text-accent-primary text-text-secondary">
                     <i class="fas fa-home text-lg w-5"></i>
                     <span>Dashboard</span>
                 </a>
