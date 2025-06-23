@@ -232,7 +232,7 @@ if ($activityResult && $activityResult->num_rows > 0) {
                 </p>
                 <div class="flex flex-col md:flex-row md:space-x-4 space-y-4 md:space-y-0 items-center md:justify-start justify-center animate-slide-up">
                     <button onclick="document.getElementById('projects').scrollIntoView({ behavior: 'smooth' });" class="bg-warm-wood text-dark-bg w-full md:w-auto px-8 py-3 rounded-lg font-semibold hover:bg-opacity-90 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
-                        Hubungi Saya
+                        Lihat Project
                     </button>
                     <button onclick="document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });" class="border-2 border-warm-wood text-warm-wood w-full md:w-auto px-8 py-3 rounded-lg font-semibold hover:bg-warm-wood hover:text-dark-bg transition-all duration-300">
                         Hubungi Saya

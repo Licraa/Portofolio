@@ -1,7 +1,18 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
 
 include 'db.php';
 
+// Cek dan ambil notifikasi dari session
+if (isset($_SESSION['notif'])) {
+    $notif = $_SESSION['notif'];
+    unset($_SESSION['notif']);
+}
 
 // --- Handle Profile Image Upload ---
 $profileImages = [];
@@ -47,8 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profileImage'])) {
                         // Do NOT unlink($profileImagesDir . $img['filename']); // keep file
                     }
                 }
-                header("Location: " . $_SERVER['PHP_SELF']);
-                exit;
+                $notif = ['type' => 'success', 'msg' => 'Foto profil berhasil diupload!'];
             }
         }
     }
@@ -59,8 +69,7 @@ if (isset($_GET['use_profile']) && is_numeric($_GET['use_profile'])) {
     $id = intval($_GET['use_profile']);
     $conn->query("UPDATE profile_images SET is_active=0");
     $conn->query("UPDATE profile_images SET is_active=1 WHERE id=$id");
-    header("Location: " . strtok($_SERVER['REQUEST_URI'], '?'));
-    exit;
+    $notif = ['type' => 'success', 'msg' => 'Foto profil aktif diganti!'];
 }
 
 
@@ -94,12 +103,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
     $check = $conn->query("SELECT id FROM profile LIMIT 1");
     if ($check && $check->num_rows > 0) {
         $conn->query("UPDATE profile SET full_name='$fullName', profession='$profession', birth_place='$birthPlace', birth_date='$birthDate', value_per_month='$valuePerMonth' LIMIT 1");
+        $notif = ['type' => 'success', 'msg' => 'Profil berhasil diupdate!'];
     } else {
         $conn->query("INSERT INTO profile (full_name, profession, birth_place, birth_date, value_per_month) VALUES ('$fullName', '$profession', '$birthPlace', '$birthDate', '$valuePerMonth')");
+        $notif = ['type' => 'success', 'msg' => 'Profil berhasil ditambah!'];
     }
-    // Refresh data
-    header("Location: " . $_SERVER['PHP_SELF']);
-    exit;
 }
 
 
@@ -121,8 +129,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_about'])) {
     $check = $conn->query("SELECT id FROM about LIMIT 1");
     if ($check && $check->num_rows > 0) {
         $conn->query("UPDATE about SET main_description='$mainDesc', additional_description='$addDesc' LIMIT 1");
+        $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Tentang berhasil diupdate!'];
     } else {
         $conn->query("INSERT INTO about (main_description, additional_description) VALUES ('$mainDesc', '$addDesc')");
+        $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Tentang berhasil ditambah!'];
     }
     header("Location: " . $_SERVER['PHP_SELF'] . "#about-tab");
     exit;
@@ -134,10 +144,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_education'])) {
     $program = $conn->real_escape_string($_POST['edu_program']);
     $description = $conn->real_escape_string($_POST['edu_description']);
     $conn->query("INSERT INTO education (institution, program, description) VALUES ('$institution', '$program', '$description')");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Pendidikan berhasil ditambah!'];
     header("Location: " . $_SERVER['PHP_SELF'] . "#about-tab");
     exit;
 }
-
 // --- Handle update education ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_education'])) {
     $id = intval($_POST['edu_id']);
@@ -145,6 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_education'])) {
     $program = $conn->real_escape_string($_POST['edu_program']);
     $description = $conn->real_escape_string($_POST['edu_description']);
     $conn->query("UPDATE education SET institution='$institution', program='$program', description='$description' WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Pendidikan berhasil diupdate!'];
     header("Location: " . $_SERVER['PHP_SELF'] . "#about-tab");
     exit;
 }
@@ -152,20 +163,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_education'])) {
 if (isset($_GET['delete_education']) && is_numeric($_GET['delete_education'])) {
     $id = intval($_GET['delete_education']);
     $conn->query("DELETE FROM education WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Pendidikan berhasil dihapus!'];
     header("Location: " . strtok($_SERVER['REQUEST_URI'], '?') . "#about-tab");
     exit;
 }
-
 // --- Handle add organization ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_organization'])) {
     $name = $conn->real_escape_string($_POST['org_name']);
     $position = $conn->real_escape_string($_POST['org_position']);
     $description = $conn->real_escape_string($_POST['org_description']);
     $conn->query("INSERT INTO organization (name, position, description) VALUES ('$name', '$position', '$description')");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Organisasi berhasil ditambah!'];
     header("Location: " . $_SERVER['PHP_SELF'] . "#about-tab");
     exit;
 }
-
 // --- Handle update organization ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_organization'])) {
     $id = intval($_POST['org_id']);
@@ -173,6 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_organization']))
     $position = $conn->real_escape_string($_POST['org_position']);
     $description = $conn->real_escape_string($_POST['org_description']);
     $conn->query("UPDATE organization SET name='$name', position='$position', description='$description' WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Organisasi berhasil diupdate!'];
     header("Location: " . $_SERVER['PHP_SELF'] . "#about-tab");
     exit;
 }
@@ -180,21 +192,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_organization']))
 if (isset($_GET['delete_organization']) && is_numeric($_GET['delete_organization'])) {
     $id = intval($_GET['delete_organization']);
     $conn->query("DELETE FROM organization WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Organisasi berhasil dihapus!'];
     header("Location: " . strtok($_SERVER['REQUEST_URI'], '?') . "#about-tab");
     exit;
 }
-
 // --- Handle add skill ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_skill'])) {
     $name = $conn->real_escape_string($_POST['skill_name']);
     $category = $conn->real_escape_string($_POST['skill_category']);
     $level = intval($_POST['skill_level']);
     $iconPath = null;
-
-    // Handle file upload for skill icon
     if (isset($_FILES['skill_icon']) && $_FILES['skill_icon']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['skill_icon'];
-        if ($file['size'] <= 500 * 1024) { // Max 500KB
+        if ($file['size'] <= 500 * 1024) {
             $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
             if (in_array($ext, ['png', 'svg'])) {
                 $iconName = 'skill_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
@@ -205,12 +215,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_skill'])) {
             }
         }
     }
-
     $conn->query("INSERT INTO skills (name, category, level, path_icon) VALUES ('$name', '$category', $level, '$iconPath')");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Skill berhasil ditambah!'];
     header("Location: " . $_SERVER['PHP_SELF'] . "#skills-tab");
     exit;
 }
-
 // --- Handle update skill ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_skill'])) {
     $id = intval($_POST['skill_id']);
@@ -218,7 +227,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_skill'])) {
     $category = $conn->real_escape_string($_POST['skill_category']);
     $level = intval($_POST['skill_level']);
     $iconPath = $_POST['skill_icon_old'];
-    // Jika upload icon baru
     if (isset($_FILES['skill_icon']) && $_FILES['skill_icon']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['skill_icon'];
         if ($file['size'] <= 500 * 1024) {
@@ -233,6 +241,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_skill'])) {
         }
     }
     $conn->query("UPDATE skills SET name='$name', category='$category', level=$level, path_icon='$iconPath' WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Skill berhasil diupdate!'];
     header("Location: " . $_SERVER['PHP_SELF'] . "#skills-tab");
     exit;
 }
@@ -240,10 +249,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_skill'])) {
 if (isset($_GET['delete_skill']) && is_numeric($_GET['delete_skill'])) {
     $id = intval($_GET['delete_skill']);
     $conn->query("DELETE FROM skills WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Skill berhasil dihapus!'];
     header("Location: " . strtok($_SERVER['REQUEST_URI'], '?') . "#skills-tab");
     exit;
 }
-
 // --- Handle add article ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_article'])) {
     $title = $conn->real_escape_string($_POST['article_title']);
@@ -252,10 +261,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_article'])) {
     $content = $conn->real_escape_string($_POST['article_content']);
     $image = $conn->real_escape_string($_POST['article_image']);
     $conn->query("INSERT INTO articles (title, excerpt, content, image, publish_date) VALUES ('$title', '$excerpt', '$content', '$image', '$date')");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Artikel berhasil ditambah!'];
     header("Location: " . $_SERVER['PHP_SELF'] . "#articles-tab");
     exit;
 }
-
+// --- Handle edit article ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_article'])) {
+    $id = intval($_POST['article_id']);
+    $title = $conn->real_escape_string($_POST['article_title']);
+    $date = $conn->real_escape_string($_POST['article_date']);
+    $excerpt = $conn->real_escape_string($_POST['article_excerpt']);
+    $content = $conn->real_escape_string($_POST['article_content']);
+    $image = $conn->real_escape_string($_POST['article_image']);
+    $conn->query("UPDATE articles SET title='$title', excerpt='$excerpt', content='$content', image='$image', publish_date='$date' WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Artikel berhasil diupdate!'];
+    header("Location: " . $_SERVER['PHP_SELF'] . "#articles-tab");
+    exit;
+}
+// --- Handle delete article ---
+if (isset($_GET['delete_article']) && is_numeric($_GET['delete_article'])) {
+    $id = intval($_GET['delete_article']);
+    $conn->query("DELETE FROM articles WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Artikel berhasil dihapus!'];
+    header("Location: " . strtok($_SERVER['REQUEST_URI'], '?') . "#articles-tab");
+    exit;
+}
 // --- Handle add project ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_project'])) {
     $title = $conn->real_escape_string($_POST['project_title']);
@@ -266,7 +296,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_project'])) {
     $imagePath = '';
     if (isset($_FILES['project_image']) && $_FILES['project_image']['error'] === UPLOAD_ERR_OK) {
         $file = $_FILES['project_image'];
-        if ($file['size'] <= 2 * 1024 * 1024) { // max 2MB
+        if ($file['size'] <= 2 * 1024 * 1024) {
             $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
             if (in_array($ext, ['jpg', 'jpeg', 'png'])) {
                 $imgName = 'project_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
@@ -278,10 +308,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_project'])) {
         }
     }
     $conn->query("INSERT INTO projects (title, description, technologies, image, github, demo) VALUES ('$title', '$desc', '$tech', '$imagePath', '$github', '$demo')");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Proyek berhasil ditambah!'];
     header("Location: " . $_SERVER['PHP_SELF'] . "#projects-tab");
     exit;
 }
-
 // --- Handle update project ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_project'])) {
     $id = intval($_POST['project_id']);
@@ -305,6 +335,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_project'])) {
         }
     }
     $conn->query("UPDATE projects SET title='$title', description='$desc', technologies='$tech', image='$imagePath', github='$github', demo='$demo' WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Proyek berhasil diupdate!'];
     header("Location: " . $_SERVER['PHP_SELF'] . "#projects-tab");
     exit;
 }
@@ -312,77 +343,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_project'])) {
 if (isset($_GET['delete_project']) && is_numeric($_GET['delete_project'])) {
     $id = intval($_GET['delete_project']);
     $conn->query("DELETE FROM projects WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Proyek berhasil dihapus!'];
     header("Location: " . strtok($_SERVER['REQUEST_URI'], '?') . "#projects-tab");
     exit;
 }
-
-// handle edit article
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_article'])) {
-    $id = intval($_POST['article_id']);
-    $title = $conn->real_escape_string($_POST['article_title']);
-    $date = $conn->real_escape_string($_POST['article_date']);
-    $excerpt = $conn->real_escape_string($_POST['article_excerpt']);
-    $content = $conn->real_escape_string($_POST['article_content']);
-    $image = $conn->real_escape_string($_POST['article_image']);
-    $conn->query("UPDATE articles SET title='$title', excerpt='$excerpt', content='$content', image='$image', publish_date='$date' WHERE id=$id");
-    header("Location: " . $_SERVER['PHP_SELF'] . "#articles-tab");
-    exit;
-}
-
-
-// --- Handle delete article ---
-if (isset($_GET['delete_article']) && is_numeric($_GET['delete_article'])) {
-    $id = intval($_GET['delete_article']);
-    $conn->query("DELETE FROM articles WHERE id=$id");
-    header("Location: " . strtok($_SERVER['REQUEST_URI'], '?') . "#articles-tab");
-    exit;
-}
-
 // --- Handle save contact & social media ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_contact'])) {
     $email = $conn->real_escape_string($_POST['contact_email']);
     $phone = intval($_POST['contact_phone']);
     $location = $conn->real_escape_string($_POST['contact_location']);
-    // $twitter = $conn->real_escape_string($_POST['social_twitter']);
-    // $linkedin = $conn->real_escape_string($_POST['social_linkedin']);
-    // $github = $conn->real_escape_string($_POST['social_github']);
     $check = $conn->query("SELECT id FROM contact LIMIT 1");
     if ($check && $check->num_rows > 0) {
         $conn->query("UPDATE contact SET email='$email', phone='$phone', location='$location' LIMIT 1");
+        $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Kontak berhasil diupdate!'];
     } else {
         $conn->query("INSERT INTO contact (email, phone, location) VALUES ('$email', '$phone', '$location')");
+        $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Kontak berhasil ditambah!'];
     }
     header("Location: " . $_SERVER['PHP_SELF'] . "#contact-tab");
     exit;
 }
-
-// handle edit contact
+// --- Handle edit contact ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_contact'])) {
     $id = intval($_POST['contact_id']);
     $email = $conn->real_escape_string($_POST['contact_email']);
     $phone = intval($_POST['contact_phone']);
     $location = $conn->real_escape_string($_POST['contact_location']);
-    // $twitter = $conn->real_escape_string($_POST['social_twitter']);
-    // $linkedin = $conn->real_escape_string($_POST['social_linkedin']);
-    // $github = $conn->real_escape_string($_POST['social_github']);
     $conn->query("UPDATE contact SET email='$email', phone='$phone', location='$location' WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Kontak berhasil diupdate!'];
     header("Location: " . $_SERVER['PHP_SELF'] . "#contact-tab");
     exit;
 }
-
-// delete_contact
+// --- Handle delete contact ---
 if (isset($_GET['delete_contact']) && is_numeric($_GET['delete_contact'])) {
     $id = intval($_GET['delete_contact']);
     $conn->query("DELETE FROM contact WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Kontak berhasil dihapus!'];
     header("Location: " . strtok($_SERVER['REQUEST_URI'], '?') . "#contact-tab");
     exit;
 }
-
 // --- Handle add activity ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_activity'])) {
     $activity = $conn->real_escape_string($_POST['activity_name']);
     $description = $conn->real_escape_string($_POST['activity_description']);
     $conn->query("INSERT INTO activity (name, description) VALUES ('$activity', '$description')");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Aktivitas berhasil ditambah!'];
     header("Location: " . $_SERVER['PHP_SELF'] . "#about-tab");
     exit;
 }
@@ -390,20 +395,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_activity'])) {
 if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
     $id = intval($_GET['delete_activity']);
     $conn->query("DELETE FROM activity WHERE id=$id");
+    $_SESSION['notif'] = ['type' => 'success', 'msg' => 'Aktivitas berhasil dihapus!'];
     header("Location: " . strtok($_SERVER['REQUEST_URI'], '?') . "#about-tab");
     exit;
 }
-// --- Handle edit activity ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_activity'])) {
-    $id = intval($_POST['activity_id']);
-    $activity = $conn->real_escape_string($_POST['activity_name']);
-    $description = $conn->real_escape_string($_POST['activity_description']);
-    $conn->query("UPDATE activity SET name='$activity', description='$description' WHERE id=$id");
-    header("Location: " . $_SERVER['PHP_SELF'] . "#about-tab");
-    exit;
-}
-
-// Handle delete message
+// handle edit message
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
     $id = intval($_POST['delete_message_id']);
     $conn->query("DELETE FROM contact_messages WHERE id=$id");
@@ -489,68 +485,146 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
 </head>
 
 <body class="bg-dark-bg text-light-surface min-h-screen font-sans">
-    <!-- Responsive Navbar (Admin) -->
-    <nav class="bg-gray-900 px-4 py-3 flex items-center justify-between md:hidden shadow-lg sticky top-0 z-50 glass-effect">
-        <div class="text-warm-wood font-bold text-lg tracking-wide">Portofolio Admin</div>
-        <button id="navToggle" class="text-warm-wood focus:outline-none">
-            <!-- Hamburger icon -->
-            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M4 6h16M4 12h16M4 18h16" />
+    <!-- Mobile Navigation Header -->
+    <nav class="bg-slate-900 px-6 py-4 flex items-center justify-between md:hidden shadow-2xl sticky top-0 z-50 glass-effect border-b border-warm-wood/20">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 bg-gradient-to-br from-warm-wood to-dark-wood rounded-lg flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
+                </svg>
+            </div>
+            <div class="nav-logo font-bold text-xl tracking-tight">Portfolio Admin</div>
+        </div>
+        <button id="navToggle" class="p-2 rounded-lg hover:bg-warm-wood/10 transition-colors focus:outline-none focus:ring-2 focus:ring-warm-wood/50">
+            <svg id="hamburgerIcon" class="w-6 h-6 text-warm-wood transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg id="closeIcon" class="w-6 h-6 text-warm-wood transition-transform duration-300 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
     </nav>
-    <!-- Mobile Tabs Menu -->
-    <div id="mobileMenu" class="hidden md:hidden mt-2 space-y-2 px-2 pb-2 bg-gray-900 rounded-b-xl shadow-lg glass-effect">
-        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="profile"><span>👤</span>Profil</button>
-        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="about"><span>📝</span>Tentang</button>
-        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="skills"><span>🛠️</span>Skills</button>
-        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="projects"><span>🚀</span>Proyek</button>
-        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="articles"><span>📰</span>Artikel</button>
-        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="contact"><span>📞</span>Kontak</button>
-        <button class="tab-btn block w-full text-left py-2 px-3 rounded-lg hover:bg-warm-wood/20 transition flex items-center gap-2" data-tab="contact-messages"><span>📬</span>Pesan Masuk</button>
+
+    <!-- Mobile Menu Dropdown -->
+    <div id="mobileMenu" class="hidden md:hidden bg-slate-900 shadow-2xl glass-effect border-b border-warm-wood/20">
+        <div class="px-4 py-3 space-y-1">
+            <button class="tab-btn active w-full text-left py-3 px-4 rounded-xl hover:bg-warm-wood/10 transition-all duration-200 flex items-center gap-3 group" data-tab="profile">
+                <span class="nav-icon text-lg">👤</span>
+                <span class="font-medium text-warm-wood">Profil</span>
+            </button>
+            <button class="tab-btn w-full text-left py-3 px-4 rounded-xl hover:bg-warm-wood/10 transition-all duration-200 flex items-center gap-3 group" data-tab="about">
+                <span class="nav-icon text-lg">📋</span>
+                <span class="font-medium text-gray-300 group-hover:text-warm-wood">Tentang</span>
+            </button>
+            <button class="tab-btn w-full text-left py-3 px-4 rounded-xl hover:bg-warm-wood/10 transition-all duration-200 flex items-center gap-3 group" data-tab="skills">
+                <span class="nav-icon text-lg">⚡</span>
+                <span class="font-medium text-gray-300 group-hover:text-warm-wood">Keahlian</span>
+            </button>
+            <button class="tab-btn w-full text-left py-3 px-4 rounded-xl hover:bg-warm-wood/10 transition-all duration-200 flex items-center gap-3 group" data-tab="projects">
+                <span class="nav-icon text-lg">🚀</span>
+                <span class="font-medium text-gray-300 group-hover:text-warm-wood">Proyek</span>
+            </button>
+            <button class="tab-btn w-full text-left py-3 px-4 rounded-xl hover:bg-warm-wood/10 transition-all duration-200 flex items-center gap-3 group" data-tab="articles">
+                <span class="nav-icon text-lg">📝</span>
+                <span class="font-medium text-gray-300 group-hover:text-warm-wood">Artikel</span>
+            </button>
+            <button class="tab-btn w-full text-left py-3 px-4 rounded-xl hover:bg-warm-wood/10 transition-all duration-200 flex items-center gap-3 group" data-tab="contact">
+                <span class="nav-icon text-lg">📞</span>
+                <span class="font-medium text-gray-300 group-hover:text-warm-wood">Kontak</span>
+            </button>
+            <button class="tab-btn w-full text-left py-3 px-4 rounded-xl hover:bg-warm-wood/10 transition-all duration-200 flex items-center gap-3 group relative" data-tab="contact-messages">
+                <span class="nav-icon text-lg">💬</span>
+                <span class="font-medium text-gray-300 group-hover:text-warm-wood">Pesan Masuk</span>
+                <span class="notification-badge"></span>
+            </button>
+            <form method="post" action="logout.php" class="mt-4">
+                <button type="submit" class="w-full bg-red-900 text-left py-3 px-4 rounded-xl hover:bg-warm-wood/10 transition-all duration-200 flex items-center gap-3 group relative">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v3a1 1 0 01-1 1H8a1 1 0 01-1-1v-3m6 0H7" />
+                    </svg>
+                    Keluar
+                </button>
+            </form>
+        </div>
     </div>
+
     <script>
         // Hamburger for mobile menu
         const navToggle = document.getElementById('navToggle');
         const mobileMenu = document.getElementById('mobileMenu');
+        const hamburgerIcon = document.getElementById('hamburgerIcon');
+        const closeIcon = document.getElementById('closeIcon');
         navToggle && navToggle.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
+            hamburgerIcon.classList.toggle('hidden');
+            closeIcon.classList.toggle('hidden');
         });
         // Tab switching for mobile menu
         document.querySelectorAll('#mobileMenu .tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 mobileMenu.classList.add('hidden');
+                hamburgerIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
             });
         });
     </script>
-    <!-- Navigation Tabs (Desktop) -->
-    <nav class="top-0 left-0 right-0 z-50 glass-effect shadow-lg backdrop-blur-md sticky hidden md:block">
-        <div class="container mx-auto px-4 py-2">
-            <div class="flex flex-wrap items-center justify-between">
-                <div class="flex space-x-2 md:space-x-6 overflow-x-auto py-2 w-full md:w-auto">
-                    <button class="tab-btn active py-2 px-4 md:px-6 text-warm-wood font-semibold border-b-2 border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="profile">
-                        <span class="mr-2">👤</span>Profil
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden md:block sticky top-0 z-50 glass-effect shadow-2xl border-b border-warm-wood/20">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo Section -->
+                <div class="flex items-center space-x-4">
+                    <div class="w-10 h-10 bg-gradient-to-br from-warm-wood to-dark-wood rounded-xl flex items-center justify-center shadow-lg">
+                        <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
+                        </svg>
+                    </div>
+                    <div class="nav-logo font-bold text-2xl tracking-tight">Portfolio Admin</div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="flex items-center space-x-2 bg-slate-800/50 rounded-2xl p-2 backdrop-blur-sm border border-warm-wood/10">
+                    <button class="tab-btn active px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 group" data-tab="profile">
+                        <span class="nav-icon text-sm">👤</span>
+                        <span class="text-warm-wood">Profil</span>
                     </button>
-                    <button class="tab-btn py-2 px-4 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="about">
-                        <span class="mr-2">📝</span>Tentang
+                    <button class="tab-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 group hover:text-warm-wood" data-tab="about">
+                        <span class="nav-icon text-sm">📋</span>
+                        <span class="text-gray-300 group-hover:text-warm-wood">Tentang</span>
                     </button>
-                    <button class="tab-btn py-2 px-4 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="skills">
-                        <span class="mr-2">🛠️</span>Skills
+                    <button class="tab-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 group hover:text-warm-wood" data-tab="skills">
+                        <span class="nav-icon text-sm">⚡</span>
+                        <span class="text-gray-300 group-hover:text-warm-wood">Keahlian</span>
                     </button>
-                    <button class="tab-btn py-2 px-4 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="projects">
-                        <span class="mr-2">🚀</span>Proyek
+                    <button class="tab-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 group hover:text-warm-wood" data-tab="projects">
+                        <span class="nav-icon text-sm">🚀</span>
+                        <span class="text-gray-300 group-hover:text-warm-wood">Proyek</span>
                     </button>
-                    <button class="tab-btn py-2 px-4 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="articles">
-                        <span class="mr-2">📰</span>Artikel
+                    <button class="tab-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 group hover:text-warm-wood" data-tab="articles">
+                        <span class="nav-icon text-sm">📝</span>
+                        <span class="text-gray-300 group-hover:text-warm-wood">Artikel</span>
                     </button>
-                    <button class="tab-btn py-2 px-4 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="contact">
-                        <span class="mr-2">📞</span>Kontak
+                    <button class="tab-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 group hover:text-warm-wood" data-tab="contact">
+                        <span class="nav-icon text-sm">📞</span>
+                        <span class="text-gray-300 group-hover:text-warm-wood">Kontak</span>
                     </button>
-                    <button class="tab-btn py-2 px-4 md:px-6 text-gray-300 hover:text-warm-wood font-semibold border-b-2 border-transparent hover:border-warm-wood transition-colors duration-200 whitespace-nowrap focus:outline-none" data-tab="contact-messages">
-                        <span class="mr-2">📬</span>Pesan Masuk
+                    <button class="tab-btn px-6 py-3 rounded-xl font-semibold transition-all duration-300 flex items-center gap-2 group hover:text-warm-wood relative" data-tab="contact-messages">
+                        <span class="nav-icon text-sm">💬</span>
+                        <span class="text-gray-300 group-hover:text-warm-wood">Pesan</span>
+                        <span class="notification-badge"></span>
                     </button>
                 </div>
+
+                <!-- Logout Button -->
+                <form method="post" action="logout.php" class="ml-4">
+                    <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H8a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1" />
+                        </svg>
+                        Logout
+                    </button>
+                </form>
             </div>
         </div>
     </nav>
@@ -1130,17 +1204,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
     </main>
 
     <!-- Success/Error Messages -->
-    <div id="messageContainer" class="fixed top-4 right
-                            ?>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </main>
+    <div id="messageContainer" class="fixed top-4 right-4 z-50"></div>
 
-    <!-- Success/Error Messages -->
-    <div id=" messageContainer" class="fixed top-4 right-4 z-50"></div>
+    <!-- Notifikasi Tailwind -->
+    <div id="notification-container" class="fixed top-6 right-6 z-50 space-y-3"></div>
 
     <!-- Modal Edit Pendidikan -->
     <div id="eduModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
@@ -1465,7 +1532,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_message'])) {
         function closeContactModal() {
             document.getElementById('contactModal').classList.add('hidden');
         }
+
+        // Show Notification
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('notification-container');
+            const color = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-blue-500'
+            } [type] || 'bg-gray-700';
+            const icon = {
+                success: '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>',
+                error: '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>',
+                warning: '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01" /></svg>',
+                info: '<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01" /></svg>'
+            } [type] || '';
+            const notif = document.createElement('div');
+            notif.className = `${color} text-white px-6 py-4 rounded-lg shadow-lg flex items-center animate-fade-in`;
+            notif.innerHTML = `${icon}<span>${message}</span>`;
+            container.appendChild(notif);
+            setTimeout(() => {
+                notif.classList.add('opacity-0');
+                setTimeout(() => notif.remove(), 500);
+            }, 2500);
+        }
     </script>
 </body>
 
 </html>
+
+<?php if (isset($notif)): ?>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => showNotification('<?php echo addslashes($notif['msg']); ?>', '<?php echo $notif['type']; ?>'));
+    </script>
+<?php endif; ?>
