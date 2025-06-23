@@ -477,7 +477,7 @@ if ($activityResult && $activityResult->num_rows > 0) {
                                 </div>
                             </div>
                             <div class="mt-auto">
-                                <a href="articles.php?id=<?php echo $article['id']; ?>" class="bg-light-surface text-dark-bg px-4 py-2 rounded-lg font-medium flex items-center justify-center">Lihat Detail</a>
+                                <a href="articles.php?id=<?php echo $article['id']; ?>" class="bg-warm-wood text-dark-bg px-4 py-2 rounded-lg font-medium flex items-center justify-center">Lihat Detail</a>
                             </div>
                         </div>
                     <?php endforeach;
