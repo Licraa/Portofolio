@@ -1,5 +1,10 @@
 <?php
-header('X-Content-Type-Options: nosniff');
+session_start();
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header('Location: login.php');
+    exit;
+}
+
 include 'db.php'; // Include database connection
 
 // Statistik dashboard
