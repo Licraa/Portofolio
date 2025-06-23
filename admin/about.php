@@ -202,8 +202,10 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
 
 <body class="bg-dark-bg text-text-primary min-h-screen font-sans overflow-x-hidden">
     <div class="flex min-h-screen relative z-10">
+        <!-- Overlay (mobile only) -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity duration-300"></div>
         <!-- Sidebar -->
-        <aside class="w-80 bg-dark-surface glass-morphism border-r border-border-color flex flex-col py-8 px-6 sticky top-0 h-screen z-40 sidebar-scroll overflow-y-auto">
+        <aside id="sidebar" class="w-72 md:w-80 bg-dark-surface glass-morphism border-r border-border-color flex flex-col py-8 px-6 fixed md:sticky top-0 h-full md:h-screen z-40 sidebar-scroll overflow-y-auto -left-80 md:left-0 transition-all duration-300">
             <!-- Logo Section -->
             <div class="flex items-center gap-4 mb-12">
                 <div class="relative">
@@ -267,10 +269,15 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
                 </form>
             </div>
         </aside>
-        <main class="flex-1 p-8 md:p-12 bg-dark-bg min-h-screen">
-            <div class="max-w-3xl mx-auto">
-                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
-                    <h2 class="text-3xl font-bold gradient-text mb-8 flex items-center gap-3"><i class="fas fa-info-circle"></i>Kelola Tentang</h2>
+        <main class="flex-1 p-4 sm:p-8 md:p-12 bg-dark-bg min-h-screen overflow-x-auto">
+            <!-- Hamburger (mobile only) -->
+            <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
+                <span class="sr-only">Buka navigasi</span>
+                <i class="fas fa-bars text-2xl text-white"></i>
+            </button>
+            <div class="max-w-3xl w-full mx-auto px-0 flex flex-col gap-8">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
+                    <h2 class="text-3xl font-bold gradient-text mb-8 flex items-center gap-3 pl-16 md:pl-0"><i class="fas fa-info-circle"></i>Kelola Tentang</h2>
                     <form method="post">
                         <div class="mb-4">
                             <label class="block text-sm font-medium mb-2">Deskripsi Utama</label>
@@ -286,7 +293,7 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
                     </form>
                 </div>
                 <!-- Pendidikan -->
-                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
                     <h3 class="text-2xl font-bold gradient-text mb-6 flex items-center gap-3"><i class="fas fa-graduation-cap"></i>Pendidikan</h3>
                     <form method="post">
                         <div class="grid md:grid-cols-3 gap-4">
@@ -336,7 +343,7 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
                     </div>
                 </div>
                 <!-- Organisasi -->
-                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
                     <h3 class="text-2xl font-bold gradient-text mb-6 flex items-center gap-3"><i class="fas fa-users"></i>Organisasi</h3>
                     <form method="post">
                         <div class="grid md:grid-cols-3 gap-4">
@@ -386,7 +393,7 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
                     </div>
                 </div>
                 <!-- Aktivitas -->
-                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
                     <h3 class="text-2xl font-bold gradient-text mb-6 flex items-center gap-3"><i class="fas fa-running"></i>Aktivitas</h3>
                     <form method="post">
                         <div class="grid md:grid-cols-2 gap-4">
@@ -520,6 +527,59 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
     </main>
     </div>
     <script>
+        // Sidebar responsive toggle
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const hamburger = document.getElementById('hamburgerBtn');
+
+        function openSidebar() {
+            sidebar.classList.remove('-left-80');
+            sidebar.classList.add('left-0');
+            overlay.classList.remove('hidden');
+            hamburger.classList.add('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.add('-left-80');
+            sidebar.classList.remove('left-0');
+            overlay.classList.add('hidden');
+            hamburger.classList.remove('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        hamburger.addEventListener('click', openSidebar);
+        overlay.addEventListener('click', closeSidebar);
+        // Tutup sidebar jika klik link di sidebar (mobile)
+        sidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) closeSidebar();
+            });
+        });
+        // Tutup sidebar jika resize ke desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) closeSidebar();
+        });
+        // Tutup sidebar jika klik di luar sidebar (mobile)
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth >= 768) return;
+            if (!sidebar.contains(e.target) && !hamburger.contains(e.target) && !overlay.classList.contains('hidden')) {
+                closeSidebar();
+            }
+        });
+        // --- Scroll position persistence after form submit (edit/tambah/hapus) ---
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function() {
+                sessionStorage.setItem('about_scroll', window.scrollY);
+            });
+        });
+        window.addEventListener('DOMContentLoaded', function() {
+            const scrollY = sessionStorage.getItem('about_scroll');
+            if (scrollY !== null) {
+                window.scrollTo(0, parseInt(scrollY));
+                sessionStorage.removeItem('about_scroll');
+            }
+        });
+
         function openEduModal(id, institution, program, description) {
             document.getElementById('edu_id').value = id;
             document.getElementById('edu_institution').value = institution;
@@ -554,22 +614,6 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
         function closeActivityModal() {
             document.getElementById('activityModal').classList.add('hidden');
         }
-
-        // --- Scroll position persistence after form submit (edit/tambah/hapus) ---
-        // Simpan posisi scroll sebelum submit form
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', function() {
-                sessionStorage.setItem('about_scroll', window.scrollY);
-            });
-        });
-        // Setelah halaman dimuat, kembalikan posisi scroll jika ada
-        window.addEventListener('DOMContentLoaded', function() {
-            const scrollY = sessionStorage.getItem('about_scroll');
-            if (scrollY !== null) {
-                window.scrollTo(0, parseInt(scrollY));
-                sessionStorage.removeItem('about_scroll');
-            }
-        });
     </script>
 </body>
 

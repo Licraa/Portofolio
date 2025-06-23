@@ -57,6 +57,8 @@ if (isset($_GET['use_profile']) && is_numeric($_GET['use_profile'])) {
     $conn->query("UPDATE profile_images SET is_active=0");
     $conn->query("UPDATE profile_images SET is_active=1 WHERE id=$id");
     $notif = ['type' => 'success', 'msg' => 'Foto profil aktif diganti!'];
+    header("Location: profile.php");
+    exit;
 }
 // --- Fetch Profile Data ---
 $profileData = [
@@ -282,8 +284,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
 
 <body class="bg-dark-bg text-text-primary min-h-screen font-sans overflow-x-hidden">
     <div class="flex min-h-screen relative z-10">
+        <!-- Overlay (mobile only) -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity duration-300"></div>
         <!-- Sidebar -->
-        <aside class="w-80 bg-dark-surface glass-morphism border-r border-border-color flex flex-col py-8 px-6 sticky top-0 h-screen z-40 sidebar-scroll overflow-y-auto">
+        <aside id="sidebar" class="w-72 glass-morphism border-r border-border-color flex flex-col py-8 px-6 fixed md:sticky top-0 h-full md:h-screen z-40 sidebar-scroll overflow-y-auto -left-80 md:left-0 transition-all duration-300">
             <!-- Logo Section -->
             <div class="flex items-center gap-4 mb-12">
                 <div class="relative">
@@ -340,18 +344,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
                     </div>
                 </div>
                 <form method="post" action="logout.php">
-                    <button type="submit" class="w-full bg-gradient-to-r from-accent-danger to-red-600 text-white py-3 rounded-xl font-semibold hover:shadow-2xl transition-all duration-300 flex items-center gap-3 justify-center">
+                    <button type="submit" class="w-full bg-gradient-to-r from-accent-danger to-red-600 text-white py-3 rounded-xl font-semibold hover:shadow-2xl transition-all duration-300 flex items-center gap-3 justify-center group">
                         <i class="fas fa-sign-out-alt group-hover:translate-x-1 transition-transform duration-300"></i>
                         <span>Keluar</span>
                     </button>
                 </form>
             </div>
         </aside>
-        <!-- Main Content -->
-        <main class="flex-1 p-8 md:p-12 bg-dark-bg min-h-screen">
-            <div class="max-w-3xl mx-auto">
-                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color">
-                    <h2 class="text-3xl font-bold gradient-text mb-8 flex items-center gap-3"><i class="fas fa-user"></i>Kelola Profil</h2>
+        <main class="flex-1 p-4 sm:p-8 md:p-12 bg-dark-bg min-h-screen overflow-x-auto">
+            <!-- Hamburger (mobile only) -->
+            <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
+                <span class="sr-only">Buka navigasi</span>
+                <i class="fas fa-bars text-2xl text-white"></i>
+            </button>
+            <div class="max-w-3xl w-full mx-auto px-0 flex flex-col gap-8">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
+                    <h2 class="text-3xl font-bold gradient-text mb-8 flex items-center gap-3 pl-16 md:pl-0"><i class="fas fa-user"></i>Kelola Profil</h2>
                     <div class="grid md:grid-cols-2 gap-8">
                         <!-- Profile Picture -->
                         <div>
@@ -375,12 +383,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
                                                 <input type="hidden" name="use_profile" value="<?php echo $img['id']; ?>">
                                                 <button type="submit"
                                                     class="relative group focus:outline-none transition-shadow duration-200 <?php echo $img['is_active'] ? 'ring-4 ring-accent-primary' : 'hover:ring-2 hover:ring-accent-primary'; ?>">
-                                                    <img src="<?php echo htmlspecialchars($profileImagesDir . $img['filename']); ?>"
-                                                        alt="Old Profile"
-                                                        class="w-14 h-14 rounded-full object-cover border-2 <?php echo $img['is_active'] ? 'border-accent-primary' : 'border-border-color'; ?> shadow-md transition-transform duration-200 group-hover:scale-105">
-                                                    <?php if ($img['is_active']): ?>
-                                                        <span class="absolute -top-2 -right-2 bg-accent-primary text-xs text-white rounded-full px-2 py-0.5 shadow">Aktif</span>
-                                                    <?php endif; ?>
+                                                    <img src="<?php echo htmlspecialchars($profileImagesDir . $img['filename']); ?>" alt="Profile" class="w-12 h-12 rounded-full object-cover">
                                                 </button>
                                             </form>
                                         <?php endforeach; ?>
@@ -409,7 +412,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
                                 </div>
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium mb-2">Nilai Per Bulan</label>
-                                    <input type="number" name="value_per_month" value="<?php echo htmlspecialchars($profileData['value_per_month']); ?>" class="profile-input w-full rounded-lg bg-dark-surface border border-border-color px-4 py-2 text-text-primary focus:ring-2 focus:ring-accent-primary" min="0" step="1000">
+                                    <input type="text" name="value_per_month" value="<?php echo htmlspecialchars($profileData['value_per_month']); ?>" class="profile-input w-full rounded-lg bg-dark-surface border border-border-color px-4 py-2 text-text-primary focus:ring-2 focus:ring-accent-primary">
                                 </div>
                                 <div class="mt-8 flex justify-end">
                                     <button type="submit" name="save_profile" class="bg-accent-success text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 shadow"><i class="fas fa-save"></i> Simpan Profil</button>
@@ -423,13 +426,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
                                 const container = document.createElement('div');
                                 container.className = 'fixed top-6 right-6 z-50';
                                 const notif = document.createElement('div');
-                                notif.className = 'bg-accent-success text-white px-6 py-4 rounded-lg shadow-lg flex items-center';
+                                notif.className = 'bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center transition-opacity duration-300';
                                 notif.innerHTML = '<span><?php echo addslashes($notif['msg']); ?></span>';
                                 container.appendChild(notif);
                                 document.body.appendChild(container);
                                 setTimeout(() => {
-                                    notif.classList.add('opacity-0');
-                                    setTimeout(() => container.remove(), 500);
+                                    setTimeout(() => container.remove(), 300);
                                 }, 2500);
                             });
                         </script>
@@ -438,6 +440,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
             </div>
         </main>
     </div>
+    <script>
+        // Sidebar responsive toggle
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const hamburger = document.getElementById('hamburgerBtn');
+
+        function openSidebar() {
+            sidebar.classList.remove('-left-80');
+            sidebar.classList.add('left-0');
+            overlay.classList.remove('hidden');
+            hamburger.classList.add('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.add('-left-80');
+            sidebar.classList.remove('left-0');
+            overlay.classList.add('hidden');
+            hamburger.classList.remove('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        hamburger.addEventListener('click', openSidebar);
+        overlay.addEventListener('click', closeSidebar);
+        // Tutup sidebar jika klik link di sidebar (mobile)
+        sidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) closeSidebar();
+            });
+        });
+        // Tutup sidebar jika resize ke desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) closeSidebar();
+        });
+        // Tutup sidebar jika klik di luar sidebar (mobile)
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth >= 768) return;
+            if (!sidebar.contains(e.target) && !hamburger.contains(e.target) && !overlay.classList.contains('hidden')) {
+                closeSidebar();
+            }
+        });
+    </script>
 </body>
 
 </html>

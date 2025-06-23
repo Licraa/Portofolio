@@ -195,8 +195,10 @@ if (isset($_GET['delete_project']) && is_numeric($_GET['delete_project'])) {
 
 <body class="bg-dark-bg text-text-primary min-h-screen font-sans overflow-x-hidden">
     <div class="flex min-h-screen relative z-10">
+        <!-- Overlay (mobile only) -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity duration-300"></div>
         <!-- Sidebar -->
-        <aside class="w-80 bg-dark-surface glass-morphism border-r border-border-color flex flex-col py-8 px-6 sticky top-0 h-screen z-40 sidebar-scroll overflow-y-auto">
+        <aside id="sidebar" class="w-72 md:w-80 bg-dark-surface glass-morphism border-r border-border-color flex flex-col py-8 px-6 fixed md:sticky top-0 h-full md:h-screen z-40 sidebar-scroll overflow-y-auto -left-80 md:left-0 transition-all duration-300">
             <!-- Logo Section -->
             <div class="flex items-center gap-4 mb-12">
                 <div class="relative">
@@ -261,10 +263,15 @@ if (isset($_GET['delete_project']) && is_numeric($_GET['delete_project'])) {
             </div>
         </aside>
         <!-- Main Content -->
-        <main class="flex-1 p-8 md:p-12 bg-dark-bg min-h-screen">
-            <div class="max-w-4xl mx-auto">
-                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
-                    <h2 class="text-3xl font-bold gradient-text mb-8 flex items-center gap-3"><i class="fas fa-rocket"></i>Kelola Proyek</h2>
+        <main class="flex-1 p-4 sm:p-8 md:p-12 bg-dark-bg min-h-screen overflow-x-auto">
+            <!-- Hamburger (mobile only) -->
+            <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
+                <span class="sr-only">Buka navigasi</span>
+                <i class="fas fa-bars text-2xl text-white"></i>
+            </button>
+            <div class="max-w-4xl w-full mx-auto px-0 flex flex-col gap-8">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
+                    <h2 class="text-3xl font-bold gradient-text mb-8 flex items-center gap-3 pl-16 md:pl-0"><i class="fas fa-rocket"></i>Kelola Proyek</h2>
                     <form method="post" enctype="multipart/form-data" class="mb-8">
                         <div class="grid md:grid-cols-2 gap-4">
                             <div>
@@ -399,20 +406,46 @@ if (isset($_GET['delete_project']) && is_numeric($_GET['delete_project'])) {
         </main>
     </div>
     <script>
-        function openProjectModal(id, title, tech, desc, image, github, demo) {
-            document.getElementById('modal_project_id').value = id;
-            document.getElementById('modal_project_title').value = title;
-            document.getElementById('modal_project_tech').value = tech;
-            document.getElementById('modal_project_desc').value = desc;
-            document.getElementById('modal_project_image_old').value = image;
-            document.getElementById('modal_project_github').value = github;
-            document.getElementById('modal_project_demo').value = demo;
-            document.getElementById('projectModal').classList.remove('hidden');
+        // Sidebar responsive toggle
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const hamburger = document.getElementById('hamburgerBtn');
+
+        function openSidebar() {
+            sidebar.classList.remove('-left-80');
+            sidebar.classList.add('left-0');
+            overlay.classList.remove('hidden');
+            hamburger.classList.add('hidden');
+            document.body.classList.add('overflow-hidden');
         }
 
-        function closeProjectModal() {
-            document.getElementById('projectModal').classList.add('hidden');
+        function closeSidebar() {
+            sidebar.classList.add('-left-80');
+            sidebar.classList.remove('left-0');
+            overlay.classList.add('hidden');
+            hamburger.classList.remove('hidden');
+            document.body.classList.remove('overflow-hidden');
         }
+        hamburger.addEventListener('click', openSidebar);
+        overlay.addEventListener('click', closeSidebar);
+        // Tutup sidebar jika klik link di sidebar (mobile)
+        sidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) closeSidebar();
+            });
+        });
+        // Tutup sidebar jika resize ke desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) closeSidebar();
+        });
+        // Tutup sidebar jika klik di luar sidebar (mobile)
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth >= 768) return;
+            if (!sidebar.contains(e.target) && !hamburger.contains(e.target) && !overlay.classList.contains('hidden')) {
+                closeSidebar();
+            }
+        });
+        // --- existing code (modal, notif) ---
     </script>
 </body>
 

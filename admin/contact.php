@@ -244,8 +244,10 @@ if ($socialQ && $socialQ->num_rows > 0) {
 
 <body class="bg-dark-bg text-text-primary min-h-screen font-sans overflow-x-hidden">
     <div class="flex min-h-screen relative z-10">
+        <!-- Overlay (mobile only) -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity duration-300"></div>
         <!-- Sidebar -->
-        <aside class="w-80 bg-dark-surface glass-morphism border-r border-border-color flex flex-col py-8 px-6 sticky top-0 h-screen z-40 sidebar-scroll overflow-y-auto">
+        <aside id="sidebar" class="w-72 md:w-80 bg-dark-surface glass-morphism border-r border-border-color flex flex-col py-8 px-6 fixed md:sticky top-0 h-full md:h-screen z-40 sidebar-scroll overflow-y-auto -left-80 md:left-0 transition-all duration-300">
             <!-- Logo Section -->
             <div class="flex items-center gap-4 mb-12">
                 <div class="relative">
@@ -308,13 +310,15 @@ if ($socialQ && $socialQ->num_rows > 0) {
             </div>
         </aside>
         <!-- Main Content -->
-        <main class="flex-1 p-8 md:p-12 bg-dark-bg min-h-screen">
-            <div class="max-w-4xl mx-auto">
-                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
-                    <h2 class="text-3xl font-bold gradient-text mb-8 flex items-center gap-3">
-                        <i class="fas fa-address-book text-accent-primary"></i>
-                        Kelola Kontak & Sosial Media
-                    </h2>
+        <main class="flex-1 p-4 sm:p-8 md:p-12 bg-dark-bg min-h-screen overflow-x-auto">
+            <!-- Hamburger (mobile only) -->
+            <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
+                <span class="sr-only">Buka navigasi</span>
+                <i class="fas fa-bars text-2xl text-white"></i>
+            </button>
+            <div class="max-w-4xl w-full mx-auto px-0 flex flex-col gap-8">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
+                    <h2 class="text-3xl font-bold gradient-text mb-8 flex items-center gap-3 pl-16 md:pl-0"><i class="fas fa-address-book text-accent-primary"></i>Kelola Kontak & Sosial Media</h2>
                     <?php
                     $contactQ = $conn->query("SELECT * FROM contact ORDER BY id DESC LIMIT 1");
                     $hasContact = ($contactQ && $contactQ->num_rows > 0);
@@ -350,7 +354,7 @@ if ($socialQ && $socialQ->num_rows > 0) {
                 </div>
 
                 <!-- Form Sosial Media -->
-                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8">
                     <h2 class="text-2xl font-bold gradient-text mb-6 flex items-center gap-3">
                         <i class="fab fa-hashtag text-accent-primary"></i>
                         Kelola Sosial Media
@@ -422,7 +426,7 @@ if ($socialQ && $socialQ->num_rows > 0) {
                     </div>
                 </div>
                 <!-- Pesan Masuk -->
-                <div class="glass-card rounded-3xl p-8 shadow-2xl border border-border-color mb-8 mt-12">
+                <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-border-color mb-8 mt-12">
                     <h2 class="text-2xl font-bold gradient-text mb-6 flex items-center gap-3">
                         <i class="fas fa-comments text-accent-primary"></i>
                         Pesan Masuk
@@ -532,6 +536,45 @@ if ($socialQ && $socialQ->num_rows > 0) {
                 modal.querySelector('.inline-block').addEventListener('click', function(e) {
                     e.stopPropagation();
                 });
+            }
+        });
+        // Sidebar responsive toggle
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const hamburger = document.getElementById('hamburgerBtn');
+
+        function openSidebar() {
+            sidebar.classList.remove('-left-80');
+            sidebar.classList.add('left-0');
+            overlay.classList.remove('hidden');
+            hamburger.classList.add('hidden');
+            document.body.classList.add('overflow-hidden');
+        }
+
+        function closeSidebar() {
+            sidebar.classList.add('-left-80');
+            sidebar.classList.remove('left-0');
+            overlay.classList.add('hidden');
+            hamburger.classList.remove('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+        hamburger.addEventListener('click', openSidebar);
+        overlay.addEventListener('click', closeSidebar);
+        // Tutup sidebar jika klik link di sidebar (mobile)
+        sidebar.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) closeSidebar();
+            });
+        });
+        // Tutup sidebar jika resize ke desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) closeSidebar();
+        });
+        // Tutup sidebar jika klik di luar sidebar (mobile)
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth >= 768) return;
+            if (!sidebar.contains(e.target) && !hamburger.contains(e.target) && !overlay.classList.contains('hidden')) {
+                closeSidebar();
             }
         });
     </script>
