@@ -244,7 +244,7 @@ if (isset($_GET['delete_project']) && is_numeric($_GET['delete_project'])) {
                 </a>
             </nav>
             <!-- User Profile Card -->
-            <div class="mt-8 p-6 ">
+            <div class="mt-8 p-6">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center">
                         <i class="fas fa-user text-white"></i>
@@ -262,13 +262,7 @@ if (isset($_GET['delete_project']) && is_numeric($_GET['delete_project'])) {
                 </form>
             </div>
         </aside>
-        <!-- Hamburger (mobile only) -->
-        <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
-            <span class="sr-only">Buka navigasi</span>
-            <i class="fas fa-bars text-2xl text-white"></i>
-        </button>
-        <!-- Main Content -->
-        <main class="flex-1 p-4 sm:p-8 md:p-12 bg-dark-bg min-h-screen overflow-x-auto">
+        <main class="flex-1 p-2 sm:p-4 md:p-8 bg-dark-bg min-h-screen overflow-x-hidden">
             <!-- Hamburger (mobile only) -->
             <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
                 <span class="sr-only">Buka navigasi</span>

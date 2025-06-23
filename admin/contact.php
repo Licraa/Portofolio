@@ -90,6 +90,8 @@ if ($socialQ && $socialQ->num_rows > 0) {
     while ($row = $socialQ->fetch_assoc()) {
         $socials[] = $row;
     }
+    header("Location: contact.php");
+    exit;
 }
 ?>
 

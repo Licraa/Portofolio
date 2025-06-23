@@ -205,11 +205,11 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
         <!-- Overlay (mobile only) -->
         <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden transition-opacity duration-300"></div>
         <!-- Sidebar -->
-        <aside id="sidebar" class="w-72 md:w-80 bg-dark-surface glass-morphism border-r border-border-color flex flex-col py-8 px-6 fixed md:sticky top-0 h-full md:h-screen z-40 sidebar-scroll overflow-y-auto -left-80 md:left-0 transition-all duration-300">
+        <aside id="sidebar" class="max-w-xs sm:max-w-sm md:w-72 w-full glass-morphism border-r border-border-color flex flex-col justify-between py-4 px-2 sm:py-6 sm:px-4 fixed md:sticky top-0 h-screen z-40 sidebar-scroll overflow-hidden -left-80 md:left-0 transition-all duration-300">
             <!-- Logo Section -->
             <div class="flex items-center gap-4 mb-12">
                 <div class="relative">
-                    <div class="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center shadow-2xl">
+                    <div class="w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center shadow-2xl status-indicator">
                         <i class="fas fa-crown text-white text-xl"></i>
                     </div>
                 </div>
@@ -251,7 +251,7 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
                 </a>
             </nav>
             <!-- User Profile Card -->
-            <div class="mt-8 p-6 ">
+            <div class="mt-8 p-6">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 gradient-primary rounded-full flex items-center justify-center">
                         <i class="fas fa-user text-white"></i>
@@ -269,7 +269,7 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
                 </form>
             </div>
         </aside>
-        <main class="flex-1 p-8 md:p-12 bg-dark-bg min-h-screen">
+        <main class="flex-1 p-2 sm:p-4 md:p-8 bg-dark-bg min-h-screen overflow-x-hidden">
             <!-- Hamburger (mobile only) -->
             <button id="hamburgerBtn" class="fixed top-4 left-4 z-50 md:hidden bg-dark-surface p-3 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-accent-primary" aria-label="Buka sidebar">
                 <span class="sr-only">Buka navigasi</span>
@@ -475,56 +475,56 @@ if (isset($_GET['delete_activity']) && is_numeric($_GET['delete_activity'])) {
                                 <label class="block text-sm font-medium mb-2">Posisi & Angkatan</label>
                                 <input type="text" name="org_position" id="org_position" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required>
                             </div>
-                            <div class="mb-4"></div>
-                            <label class="block text-sm font-medium mb-2">Deskripsi</label>
-                            <textarea name="org_description" id="org_description" rows="2" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required></textarea>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-2">Deskripsi</label>
+                                <textarea name="org_description" id="org_description" rows="2" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required></textarea>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" name="edit_organization" class="bg-warm-wood text-dark-bg px-6 py-2 rounded-lg font-semibold hover:bg-opacity-90">Simpan Perubahan</button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="flex justify-end">
-                        <button type="submit" name="edit_organization" class="bg-warm-wood text-dark-bg px-6 py-2 rounded-lg font-semibold hover:bg-opacity-90">Simpan Perubahan</button>
+                </div>
+                <!-- Modal Edit Aktivitas -->
+                <div id="activityModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+                    <div class="bg-gray-900 rounded-xl p-8 w-full max-w-lg relative">
+                        <button onclick="closeActivityModal()" class="absolute top-2 right-2 text-gray-400 hover:text-warm-wood text-2xl">&times;</button>
+                        <h3 class="text-xl font-bold mb-4 text-warm-wood">Edit Aktivitas</h3>
+                        <form method="post">
+                            <input type="hidden" name="activity_id" id="activity_id">
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-2">Nama Aktivitas</label>
+                                <input type="text" name="activity_name" id="activity_name" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-2">Deskripsi</label>
+                                <textarea name="activity_description" id="activity_description" rows="2" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required></textarea>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" name="edit_activity" class="bg-warm-wood text-dark-bg px-6 py-2 rounded-lg font-semibold hover:bg-opacity-90">Simpan Perubahan</button>
+                            </div>
+                        </form>
                     </div>
-                    </form>
                 </div>
+                <?php if (isset($notif)): ?>
+                    <script>
+                        window.addEventListener('DOMContentLoaded', () => {
+                            const container = document.createElement('div');
+                            container.className = 'fixed top-6 right-6 z-50';
+                            const notif = document.createElement('div');
+                            notif.className = 'bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center transition-opacity duration-300';
+                            notif.innerHTML = '<span><?php echo addslashes($notif['msg']); ?></span>';
+                            container.appendChild(notif);
+                            document.body.appendChild(container);
+                            setTimeout(() => {
+                                notif.style.opacity = '0';
+                                setTimeout(() => container.remove(), 300);
+                            }, 2500);
+                        });
+                    </script>
+                <?php endif; ?>
             </div>
-            <!-- Modal Edit Aktivitas -->
-            <div id="activityModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-                <div class="bg-gray-900 rounded-xl p-8 w-full max-w-lg relative">
-                    <button onclick="closeActivityModal()" class="absolute top-2 right-2 text-gray-400 hover:text-warm-wood text-2xl">&times;</button>
-                    <h3 class="text-xl font-bold mb-4 text-warm-wood">Edit Aktivitas</h3>
-                    <form method="post">
-                        <input type="hidden" name="activity_id" id="activity_id">
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium mb-2">Nama Aktivitas</label>
-                            <input type="text" name="activity_name" id="activity_name" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required>
-                        </div>
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium mb-2">Deskripsi</label>
-                            <textarea name="activity_description" id="activity_description" rows="2" class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-2" required></textarea>
-                        </div>
-                        <div class="flex justify-end">
-                            <button type="submit" name="edit_activity" class="bg-warm-wood text-dark-bg px-6 py-2 rounded-lg font-semibold hover:bg-opacity-90">Simpan Perubahan</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <?php if (isset($notif)): ?>
-                <script>
-                    window.addEventListener('DOMContentLoaded', () => {
-                        const container = document.createElement('div');
-                        container.className = 'fixed top-6 right-6 z-50';
-                        const notif = document.createElement('div');
-                        notif.className = 'bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center transition-opacity duration-300';
-                        notif.innerHTML = '<span><?php echo addslashes($notif['msg']); ?></span>';
-                        container.appendChild(notif);
-                        document.body.appendChild(container);
-                        setTimeout(() => {
-                            notif.style.opacity = '0';
-                            setTimeout(() => container.remove(), 300);
-                        }, 2500);
-                    });
-                </script>
-            <?php endif; ?>
-    </div>
-    </main>
+        </main>
     </div>
     <script>
         // Sidebar responsive toggle
