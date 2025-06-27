@@ -50,7 +50,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['profileImage'])) {
                 $notif = ['type' => 'success', 'msg' => 'Foto profil berhasil diupload!'];
             }
         }
+    } else {
+        $notif = ['type' => 'error', 'msg' => 'Gagal mengupload foto profil. Pastikan format file JPG/PNG dan ukuran maksimal 2MB.'];
     }
+    header("Location: profile.php");
+    exit;
 }
 if (isset($_GET['use_profile']) && is_numeric($_GET['use_profile'])) {
     $id = intval($_GET['use_profile']);
@@ -89,6 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_profile'])) {
         $conn->query("INSERT INTO profile (full_name, profession, birth_place, birth_date, value_per_month) VALUES ('$fullName', '$profession', '$birthPlace', '$birthDate', '$valuePerMonth')");
         $notif = ['type' => 'success', 'msg' => 'Profil berhasil ditambah!'];
     }
+    header("Location: profile.php");
+    exit;
 }
 ?>
 

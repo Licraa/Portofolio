@@ -21,7 +21,7 @@ if ($skillResult && $skillResult->num_rows > 0) {
 ?>
 
 <!-- Skills Section -->
-<section id="skills" class="py-20 px-4 relative overflow-hidden">
+<section id="skills" class="py-20 bg-gradient-to-b from-[#232323] via-[#D4A574]/10 to-[#232323]">
     <div class="max-w-7xl mx-auto">
         <!-- Title -->
         <h2 class="text-4xl md:text-5xl font-bold mb-16 text-center gradient-text text-warm-wood">
